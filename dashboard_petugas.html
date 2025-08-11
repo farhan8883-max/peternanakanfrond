@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Peternak</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    /* Reset dasar */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: auto;
+}
+
+body {
+  background-color: #f4f7fa;
+  color: #333;
+  padding: 20px;
+}
+
+/* Judul */
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 700;
+  color: #2c3e50;
+  letter-spacing: 1.2px;
+}
+
+/* Wrapper tabel responsive */
+.table-responsive-wrapper {
+  max-height: 600px; /* tinggi maksimal kontainer tabel */
+  overflow-y: auto;  /* aktifkan scroll vertikal */
+  overflow-x: auto;  /* tetap aktifkan scroll horizontal jika perlu */
+  margin: 0 auto 40px auto;
+  max-width: 1800px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+/* Tetap pastikan tabel lebar penuh */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 800px;
+}
+
+
+thead tr {
+  background-color: #3498db;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+thead th {
+  padding: 12px 15px;
+  border-bottom: 3px solid #2980b9;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+  cursor: default;
+}
+
+tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+/* Sel tabel */
+tbody td {
+  padding: 10px 12px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Foto di tabel, tampilkan sebagai thumbnail */
+tbody td.foto-cell img {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Tombol */
+button,
+.btn {
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+  border: none;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  color: white;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  box-shadow: 0 2px 6px rgba(23, 162, 184, 0.4);
+}
+
+.btn-info:hover {
+  background-color: #138496;
+  box-shadow: 0 4px 10px rgba(19, 132, 150, 0.6);
+}
+
+.btn-success {
+  background-color: #28a745;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  box-shadow: 0 4px 10px rgba(33, 136, 56, 0.6);
+}
+
+.btn-primary {
+  background-color: #007bff;
+  box-shadow: 0 2px 6px rgba(0, 123, 255, 0.4);
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 10px rgba(0, 86, 179, 0.6);
+}
+
+/* Modal styling */
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  background-color: #3498db;
+  color: white;
+  border-bottom: none;
+  padding: 20px 25px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.modal-body {
+  padding: 25px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Form inputs */
+.form-control,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+  resize: vertical;
+}
+
+.form-control:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+
+  table {
+    font-size: 12px;
+    min-width: 600px;
+  }
+
+  .btn,
+  button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+/* Modal background */
+.modal {
+  display: none; /* Awal modal disembunyikan */
+  position: fixed;
+  z-index: 1050;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+}
+
+/* Ketika modal aktif */
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Modal dialog */
+.modal-dialog {
+  position: relative;
+  margin: 80px auto;
+  max-width: 800px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  animation: modalFadeIn 0.3s ease forwards;
+}
+
+/* Animasi masuk modal */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background-color: #3498db;
+  color: white;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Title modal */
+.modal-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+/* Tombol close (x) */
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  color: #ddd;
+}
+
+/* Body modal */
+.modal-body {
+  padding: 25px;
+  font-size: 15px;
+  color: #444;
+}
+
+/* Untuk menghilangkan scroll body saat modal aktif */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex-wrap: wrap; /* supaya bisa turun ke bawah kalau layar kecil */
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.btn-dashboard {
+  background-color: white;
+  color: #007bff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-dashboard:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+
+/* Responsive untuk layar kecil */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    margin: 5px 0;
+  }
+  .navbar-title {
+    font-size: 1.1rem;
+  }
+}
+
+
+
+  </style>
+</head>
+
+<body class="p-4">
+  <nav class="navbar">
+  <div class="navbar-left">
+    <img src="logo.png" alt="Logo" class="navbar-logo">
+  </div>
+  <div class="navbar-center">
+    <span class="navbar-title">Peternakan Garut</span>
+  </div>
+  <div class="">
+    <button id="logoutBtn" style="color: rgb(255, 255, 255); background-color: rgb(213, 32, 32);">Logout</button>
+  </div>
+  </nav> <br>
+  <h1>Daftar Peternak</h1>
+
+  <div class="table-responsive-wrapper">
+    <table class="table table-bordered" id="table-ternak">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nama Peternak</th>
+          <th>Jumlah Ternak</th>
+          <th>Lokasi Kejadian</th>
+          <th>Tanggal Kejadian</th>
+          <th>Jenis Laporan</th>
+          <th>Keterangan</th>
+          <th>Foto</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Modal Detail -->
+  <div class="modal fade" id="modalDetail" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detail Peternak</h5>
+          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal"></button> -->
+        </div>
+        <div class="modal-body">
+          <div id="detail-peternak"></div>
+          <a href="chek.html"><button class="btn btn-success mt-3" id="btnAddChecklist">Tambah Checklist</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form Checklist
+  <div class="modal fade" id="modalChecklist" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5>Form Checklist</h5>
+        </div>
+        <div class="modal-body">
+          <form id="formChecklist">
+            <input type="hidden" id="id_ternak" name="id_ternak" />
+            <input type="text" name="nama_petugas" placeholder="Nama Petugas" class="form-control" required />
+            <select name="status" class="form-control">
+              <option value="Selesai">Selesai</option>
+              <option value="Pending">Pending</option>
+            </select>
+            <textarea name="catatan_petugas" placeholder="Catatan" class="form-control"></textarea>
+            <button class="btn btn-primary">Simpan</button>
+          </form>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_URL = "http://localhost:3000";
+    let previewInterval = null;
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    });
+
+    function loadTernak() {
+      $.get(API_URL + "/ternak", (data) => {
+        let rows = "";
+        data.forEach((item) => {
+          rows += `<tr>
+            <td>${item.id}</td>
+            <td>${item.nama_peternak}</td>
+            <td>${item.jumlah_ternak}</td>
+            <td>${item.lokasi_kejadian}</td>
+            <td>${item.tanggal_kejadian}</td>
+            <td>${item.jenis_laporan}</td>
+            <td>${item.keterangan}</td>
+            <td>${item.foto}</td>
+            <td>
+              <button class="btn btn-info btn-sm" onclick="showDetail(${item.id_peternak})">Preview</button>
+            </td>
+          </tr>`;
+        });
+        $("#table-ternak tbody").html(rows);
+      });
+    }
+
+    function showDetail(id_peternak) {
+      if (previewInterval) clearInterval(previewInterval);
+
+      function loadPreview() {
+        $.get(API_URL + `/ternak/user/${id_peternak}`, (data) => {
+          if (data.length === 0) {
+            $("#detail-peternak").html("<p class='text-danger'>Data peternak tidak ditemukan</p>");
+            // $("#checklist-body").html("");
+            return;
+          }
+          const pet = data[0];
+          $("#detail-peternak").html(`
+            <p><strong>Nama:</strong> ${pet.username || pet.nama_peternak}</p>
+            <p><strong>Email:</strong> ${pet.email || '-'}</p>
+            <p><strong>Jumlah Ternak:</strong> ${pet.jumlah_ternak}</p>
+            <p><strong>Lokasi:</strong> ${pet.lokasi_kejadian}</p>
+            <p><strong>Tanggal Kejadian:</strong> ${pet.tanggal_kejadian}</p>
+            <p><strong>Jenis Laporan:</strong> ${pet.jenis_laporan}</p>
+            <p><strong>Keterangan:</strong> ${pet.keterangan}</p>
+            <p><strong>Foto:</strong> ${pet.foto}</p>
+          `);
+          $("#id_ternak").val(pet.id);
+
+          /*
+          $.get(API_URL+`/checklist/ternak/${pet.id}`, cl=>{
+            let clRows = "";
+            if(cl.length === 0) {
+              clRows = `<tr><td colspan="4" class="text-center">Belum ada checklist</td></tr>`;
+            } else {
+              cl.forEach(c=>{
+                let statusClass = c.status === "Selesai" ? "text-success fw-bold" : "text-danger fw-bold";
+                clRows += `<tr>
+                  <td>${c.id}</td>
+                  <td>${c.nama_petugas}</td>
+                  <td class="${statusClass}">${c.status}</td>
+                  <td>${c.catatan_petugas}</td>
+                </tr>`;
+              });
+            }
+            $("#checklist-body").html(clRows);
+          });
+          */
+        });
+      }
+
+      // load pertama kali
+      loadPreview();
+      // refresh otomatis setiap 5 detik
+      previewInterval = setInterval(loadPreview, 5000);
+
+      new bootstrap.Modal(document.getElementById("modalDetail")).show();
+    }
+
+    $(document).ready(loadTernak);
+  </script>
+
+</body>
+
+</html>

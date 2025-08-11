@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    :root {
+      --primary: #6cb4ee;   /* Biru pastel */
+      --primary-dark: #4aa3e0;
+      --bg-light: #f9fbfd;  /* Background lembut */
+      --text-dark: #333;
+      --border-light: #dce3eb;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 350px;
+      transition: transform 0.2s ease;
+    }
+
+    form:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Header logo + nama */
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-header img {
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+      margin-right: 12px;
+    }
+
+    .form-header h2 {
+      font-size: 1.3rem;
+      margin: 0;
+      color: var(--text-dark);
+      font-weight: bold;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 5px rgba(108,180,238,0.3);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    .link-login {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .link-login a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .link-login a:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Responsive tweak untuk HP */
+    @media (max-width: 400px) {
+      .form-header h2 {
+        font-size: 1.1rem;
+      }
+      .form-header img {
+        width: 45px;
+        height: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <form id="loginForm">
+    <!-- Header logo + nama perusahaan -->
+    <div class="form-header">
+      <img src="logo.png" alt="Logo Perusahaan">
+      <h2>Peternakan Garut</h2>
+    </div>
+
+    <label>Username:</label>
+    <input type="text" id="username" required />
+    
+    <label>Password:</label>
+    <input type="password" id="password" required /> 
+
+    <button type="submit">Login</button>
+
+    <div class="link-login">
+      <p>Belum punya akun? <a href="registrasi.html">Daftar di sini</a></p>
+    </div>
+  </form>
+
+  <script src="login.js"></script>
+</body>
+</html>

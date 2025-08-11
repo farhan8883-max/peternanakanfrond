@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --warning: #ffc107;
+      --warning-dark: #e0a800;
+      --danger: #dc3545;
+      --danger-dark: #b02a37;
+      --light-bg: #f5f7fa;
+      --border-radius: 8px;
+      --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      padding: 20px;
+      background: var(--light-bg);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 15px;
+      text-align: center;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    form, table {
+      background: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 1500px;
+      box-shadow: var(--shadow);
+    }
+
+    form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    textarea,
+    select,
+    button,
+    input[type="file"] {
+      margin-top: 8px;
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      background-color: var(--primary);
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: background-color 0.3s ease;
+      border-radius: 6px;
+      padding: 10px 15px;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .actions button {
+      width: auto;
+      margin-right: 5px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .actions button:first-child {
+      background-color: var(--warning);
+      color: #333;
+    }
+
+    .actions button:last-child {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .actions button:first-child:hover {
+      background-color: var(--warning-dark);
+    }
+
+    .actions button:last-child:hover {
+      background-color: var(--danger-dark);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 8px;
+    }
+
+    .checkbox-group label {
+      cursor: pointer;
+    }
+
+    #fotoPreview {
+      margin-top: 10px;
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 6px;
+      object-fit: contain;
+      display: none;
+      border: 1px solid #ccc;
+      background: #fafafa;
+    }
+
+    @media (max-width: 600px) {
+      .checkbox-group {
+        flex-direction: column;
+      }
+      th, td {
+        font-size: 0.8rem;
+        padding: 8px 6px;
+      }
+      button, input, select, textarea {
+        font-size: 0.9rem;
+      }
+    }
+    .btn-back {
+  display: inline-block;
+  background-color: var(--warning);
+  color: #333;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-bottom: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+  background-color: var(--warning-dark);
+  color: #000;
+}
+
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex-wrap: wrap; /* supaya bisa turun ke bawah kalau layar kecil */
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.btn-dashboard {
+  background-color: white;
+  color: #007bff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-dashboard:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+
+/* Responsive untuk layar kecil */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    margin: 5px 0;
+  }
+  .navbar-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* Modal background */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  padding-top: 60px;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+/* Modal content box */
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  width: 95%;
+  max-width: 900px;
+  box-shadow: var(--shadow);
+}
+
+/* Close button */
+.modal-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: black;
+}
+
+  </style>
+</head>
+<body>
+<div id="checklistModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h3>Daftar Checklist</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nama Petugas</th>
+          <th>Status</th>
+          <th>Catatan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="checklistTableBodyModal"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <img src="logo.png" alt="Logo" class="navbar-logo">
+  </div>
+  <div class="navbar-center">
+    <span class="navbar-title">Peternakan Garut</span>
+  </div>
+  <div class="navbar-right">
+    <button id="logoutBtn" style="color: rgb(255, 255, 255); background-color: rgb(213, 32, 32);">Logout</button>
+  </div>
+</nav>
+
+
+
+<h2>Form Checklist</h2>
+
+<!-- Tombol Kembali -->
+
+<form id="checklistForm" enctype="multipart/form-data">
+  <input type="hidden" name="id" id="checklistId" />
+
+  <label for="id_ternak">ID Ternak (Isi manual):</label>
+  <input type="number" name="id_ternak" id="id_ternak" placeholder="Masukkan ID Ternak" required />
+
+  <label for="nama_petugas">Nama Petugas:</label>
+  <input type="text" name="nama_petugas" id="namaPetugas" placeholder="Isi nama Anda" required />
+
+  <label for="id_petugas">ID Petugas:</label>
+  <input type="number" name="id_petugas" id="idPetugas" placeholder="Isi ID Anda" required />
+
+  <label for="id_laporan">ID Laporan:</label>
+  <input type="number" name="id_laporan" id="id_laporan" placeholder="Masukkan ID Laporan" required />
+
+  <label>Check List:</label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" name="check_lokasi" value="1" /> Lokasi</label>
+    <label><input type="checkbox" name="check_sesuai_jumlah" value="1" /> Sesuai Jumlah</label>
+    <label><input type="checkbox" name="check_ada_foto" value="1" /> Ada Foto</label>
+    <label><input type="checkbox" name="check_lengkap" value="1" /> Lengkap</label>
+  </div>
+
+  <label for="status">Status:</label>
+  <select name="status" id="status" required>
+    <option value="">-- Pilih Status --</option>
+    <option value="Terverifikasi">Terverifikasi</option>
+    <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+    <option value="Ditolak">Ditolak</option>
+  </select>
+
+  <label for="catatan_petugas">Catatan Petugas:</label>
+  <textarea name="catatan_petugas" id="catatan_petugas" placeholder="Tambahkan catatan jika perlu"></textarea>
+
+  <label for="foto">Foto (Upload file):</label>
+  <input type="file" name="foto" id="foto" accept="image/*" />
+
+  <img id="fotoPreview" alt="Preview Foto" />
+
+  <button type="submit">Simpan</button>
+  <button id="btnLihatChecklist">📋 Lihat Daftar Checklist</button>
+
+</form>
+<script>
+
+  
+const API_URL = "http://localhost:3000/checklist";
+
+async function fetchChecklists() {
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error("Gagal memuat data checklist");
+    const data = await res.json();
+    const tbody = document.getElementById("checklistTableBodyModal");
+    tbody.innerHTML = "";
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.id}</td>
+        <td>${row.nama_petugas}</td>
+        <td>${row.status}</td>
+        <td>${row.catatan_petugas || ""}</td>
+        <td class="actions">
+          <button onclick="editChecklist(${row.id})">Edit</button>
+          <button onclick="deleteChecklist(${row.id})">Hapus</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+// Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    });
+
+document.getElementById("btnLihatChecklist").addEventListener("click", function () {
+  fetchChecklists(); // refresh data saat dibuka
+  document.getElementById("checklistModal").style.display = "block";
+});
+
+document.querySelector(".modal-close").onclick = function() {
+  document.getElementById("checklistModal").style.display = "none";
+};
+
+window.onclick = function(event) {
+  const modal = document.getElementById("checklistModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+
+
+
+async function editChecklist(id) {
+  try {
+    const res = await fetch(`${API_URL}/${id}`);
+    if (!res.ok) throw new Error("Gagal memuat data checklist");
+    const data = await res.json();
+    document.getElementById("checklistId").value = data.id;
+    document.querySelector('[name="id_ternak"]').value = data.id_ternak;
+    document.querySelector('[name="nama_petugas"]').value = data.nama_petugas;
+    document.querySelector('[name="id_petugas"]').value = data.id_petugas;
+    document.querySelector('[name="id_laporan"]').value = data.id_laporan;
+
+    document.querySelector('[name="check_lokasi"]').checked = !!data.check_lokasi;
+    document.querySelector('[name="check_sesuai_jumlah"]').checked = !!data.check_sesuai_jumlah;
+    document.querySelector('[name="check_ada_foto"]').checked = !!data.check_ada_foto;
+    document.querySelector('[name="check_lengkap"]').checked = !!data.check_lengkap;
+
+    document.querySelector('[name="status"]').value = data.status;
+    document.querySelector('[name="catatan_petugas"]').value = data.catatan_petugas || "";
+
+    document.getElementById("foto").value = "";
+    const fotoPreview = document.getElementById("fotoPreview");
+    if (data.foto) {
+      fotoPreview.src = data.foto;
+      fotoPreview.style.display = "block";
+    } else {
+      fotoPreview.style.display = "none";
+      fotoPreview.src = "";
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function deleteChecklist(id) {
+  if (!confirm("Yakin hapus checklist ini?")) return;
+  try {
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Gagal menghapus checklist");
+    const result = await res.json();
+    alert(result.message);
+    fetchChecklists();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+document.getElementById("foto").addEventListener("change", function () {
+  const file = this.files[0];
+  const fotoPreview = document.getElementById("fotoPreview");
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      fotoPreview.src = e.target.result;
+      fotoPreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    fotoPreview.style.display = "none";
+    fotoPreview.src = "";
+  }
+});
+
+document.getElementById("checklistForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  formData.set("check_lokasi", form.querySelector('[name="check_lokasi"]').checked ? 1 : 0);
+  formData.set("check_sesuai_jumlah", form.querySelector('[name="check_sesuai_jumlah"]').checked ? 1 : 0);
+  formData.set("check_ada_foto", form.querySelector('[name="check_ada_foto"]').checked ? 1 : 0);
+  formData.set("check_lengkap", form.querySelector('[name="check_lengkap"]').checked ? 1 : 0);
+
+  const checklistId = formData.get("id");
+  formData.delete("id");
+
+  const url = checklistId ? `${API_URL}/${checklistId}` : API_URL;
+  const method = checklistId ? "PUT" : "POST";
+
+  try {
+    const res = await fetch(url, {
+      method,
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Gagal menyimpan data checklist");
+    const result = await res.json();
+    alert(result.message);
+    form.reset();
+    document.getElementById("checklistId").value = "";
+    document.getElementById("fotoPreview").style.display = "none";
+    fetchChecklists();
+  } catch (error) {
+    alert(error.message);
+  }
+});
+
+async function viewChecklist(id) {
+  try {
+    const res = await fetch(`${API_URL}/${id}`);
+    if (!res.ok) throw new Error("Gagal memuat data checklist");
+    const data = await res.json();
+
+    const tbody = document.getElementById("modalChecklistBody");
+    tbody.innerHTML = `
+      <tr>
+        <td>${data.id}</td>
+        <td>${data.nama_petugas}</td>
+        <td>${data.status}</td>
+        <td>${data.catatan_petugas || ""}</td>
+      </tr>
+    `;
+
+    document.getElementById("checklistModal").style.display = "block";
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+// Tutup modal jika klik tombol close atau area luar
+document.querySelector(".modal-close").onclick = function() {
+  document.getElementById("checklistModal").style.display = "none";
+};
+
+window.onclick = function(event) {
+  const modal = document.getElementById("checklistModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+
+
+fetchChecklists();
+</script>
+<script></script>
+
+</body>
+</html>

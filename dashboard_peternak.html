@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Peternak</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --accent-2:#06b6d4;
+      --danger:#ef4444;
+      --shadow: 0 6px 18px rgba(18,38,63,0.08);
+      --radius:12px;
+    }
+
+    *{box-sizing:border-box}
+    body {
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      margin: 0;
+      padding: 24px;
+
+    }
+    .wrap{
+      width:100%;
+      max-width:1500px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+      border-radius:16px;
+      padding:20px;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:10px;
+    }
+    h1{font-size:1.25rem;margin:0}
+    .profile { text-align:right; color:var(--muted); font-size:0.95rem;}
+    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    button {
+      background:var(--accent);
+      color:#fff;
+      border:0;
+      padding:8px 12px;
+      border-radius:8px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.12);
+    }
+    button.ghost{
+      background:transparent;
+      color:var(--accent);
+      box-shadow:none;
+      border:1px solid rgba(37,99,235,0.12);
+    }
+    button.danger{
+      background:var(--danger);
+      box-shadow:none;
+    }
+
+    /* Table */
+    .table-wrap{
+      overflow-x:auto;
+      margin-top:16px;
+      border-radius:10px;
+      border:1px solid #edf2f7;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+      background:transparent;
+    }
+    thead th{
+      text-align:left;
+      font-size:0.9rem;
+      padding:12px 14px;
+      background:linear-gradient(90deg,#fbfdff,#f6f9ff);
+      color:#0f172a;
+      border-bottom:1px solid #eef2f7;
+    }
+    tbody td{
+      padding:12px 14px;
+      vertical-align:middle;
+      border-bottom:1px solid #f1f5f9;
+      font-size:0.95rem;
+      color:#0b1320;
+    }
+    tbody tr:hover { background: rgba(37,99,235,0.03); }
+
+    img.thumb{ max-width:56px; max-height:40px; border-radius:6px; object-fit:cover; border:1px solid #e6eefc; }
+
+    /* Modal & overlay */
+    .overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,0.45);
+      z-index:999;
+    }
+    #modal{
+      display:none;
+      position:fixed;
+      left:50%;
+      top:8%;
+      transform:translateX(-50%);
+      width:94%;
+      max-width:520px;
+      background:var(--card);
+      border-radius:12px;
+      padding:18px;
+      box-shadow: 0 20px 40px rgba(2,6,23,0.2);
+      z-index:1000;
+      max-height:84vh;
+      overflow:auto;
+    }
+    #modal h3{ margin:0 0 8px 0; font-size:1.05rem; }
+    form fieldset{ border:0; padding:0; margin:0; display:grid; gap:10px; }
+    label{ font-size:0.85rem; color:var(--muted); }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea, .file-input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #e6eefc;
+      background:#fbfdff;
+      font-size:0.95rem;
+    }
+    textarea{ min-height:80px; resize:vertical; }
+    .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .controls{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+
+    .preview-wrap{ display:flex; gap:10px; align-items:center; margin-top:6px; }
+    .preview-wrap img{ max-width:120px; max-height:90px; object-fit:cover; border-radius:8px; border:1px solid #e6eefc; }
+
+    /* Responsive */
+    @media (max-width:760px){
+      .form-row{ grid-template-columns:1fr; }
+      table{ min-width:760px; }
+      #modal{ top:6%; padding:14px; }
+      header{ flex-direction:column; align-items:flex-start; gap:12px; }
+    }
+    /* NAVBAR */
+.navbar {
+  width: 100%;
+  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex-wrap: wrap; /* supaya bisa turun ke bawah kalau layar kecil */
+}
+
+.navbar-left,
+.navbar-center,
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+}
+
+.navbar-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.btn-dashboard {
+  background-color: white;
+  color: #007bff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-dashboard:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+
+/* Responsive untuk layar kecil */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .navbar-left,
+  .navbar-center,
+  .navbar-right {
+    margin: 5px 0;
+  }
+  .navbar-title {
+    font-size: 1.1rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+  <div class="navbar-left">
+    <img src="logo.png" alt="Logo" class="navbar-logo">
+  </div>
+  <div class="navbar-center">
+    <span class="navbar-title">Peternakan Garut</span>
+  </div>
+  <button id="logoutBtn" class="ghost" style="color: #edf2f7; background-color: #ef4444;">Logout</button>
+
+  </nav>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Dashboard Peternak</h1>
+        <div style="color:var(--muted); font-size:0.9rem">Kelola laporan ternak Anda</div>
+      </div>
+      <div class="toolbar">
+        <div id="profileInfo" class="profile"></div>
+        <button id="addBtn">Tambah Data Ternak</button>
+       
+      </div>
+    </header>
+
+    <section>
+      <h3 style="margin:8px 0 4px 0; font-size:1rem">Data Ternak Anda</h3>
+      <div class="table-wrap">
+        <table id="ternakTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Peternak</th>
+              <th>Tanggal Kejadian</th>
+              <th>Jenis Laporan</th>
+              <th>Jumlah</th>
+              <th>Lokasi</th>
+              <th>Keterangan</th>
+              <th>Foto</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- overlay + Modal -->
+  <div class="overlay" id="overlay"></div>
+
+  <div id="modal" aria-hidden="true">
+    <h3 id="modalTitle">Tambah Data Ternak</h3>
+    <form id="ternakForm">
+      <input type="hidden" id="ternakId" />
+      <fieldset>
+        <div class="form-row">
+          <div>
+            <label for="nama_peternak">Nama Peternak</label>
+            <input type="text" id="nama_peternak" required />
+          </div>
+          <div>
+            <label for="tanggal_kejadian">Tanggal Kejadian</label>
+            <input type="date" id="tanggal_kejadian" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="jenis_laporan">Jenis Laporan</label>
+            <select id="jenis_laporan" required>
+              <option value="">-- Pilih jenis laporan --</option>
+              <option value="lahir">Lahir</option>
+              <option value="mati">Mati</option>
+              <option value="dipotong">Dipotong</option>
+              <option value="hilang">Hilang</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="jumlah_ternak">Jumlah Ternak</label>
+            <input type="number" id="jumlah_ternak" min="1" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="lokasi_kejadian">Lokasi Kejadian</label>
+            <input type="text" id="lokasi_kejadian" required />
+          </div>
+
+          <div>
+            <label for="keterangan">Keterangan</label>
+            <select id="keterangan_select" required>
+              <option value="">-- Pilih keterangan --</option>
+              <option value="sapi potong">Sapi Potong</option>
+              <option value="sapi perah">Sapi Perah</option>
+              <option value="domba">Domba</option>
+              <option value="kambing">Kambing</option>
+              <option value="ayam petelur">Ayam Petelur</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+            <textarea id="keterangan_lain" placeholder="Ketikan keterangan lain..." style="display:none; margin-top:8px;"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <label for="foto">Foto (opsional)</label>
+          <input type="file" id="foto" accept="image/*" class="file-input" />
+          <div class="preview-wrap">
+            <img id="previewFoto" alt="preview" style="display:none;" />
+            <div id="previewInfo" style="color:var(--muted); font-size:0.9rem;"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button type="submit" id="saveBtn">Simpan</button>
+          <button type="button" id="closeModalBtn" class="ghost">Batal</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <script>
+  const API_URL = 'http://localhost:3000';
+  let token = localStorage.getItem('token');
+
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
+      return JSON.parse(jsonPayload);
+    } catch {
+      return null;
+    }
+  }
+
+  if (!token) {
+    alert('Silakan login dulu!');
+    window.location.href = 'index.html';
+  }
+
+  const user = parseJwt(token);
+  if (!user || user.akses !== 'peternak') {
+    alert('Anda bukan peternak!');
+    window.location.href = 'index.html';
+  }
+
+  // Profil
+  document.getElementById('profileInfo').innerHTML = `
+    <div><strong>ID:</strong> ${user.id}</div>
+    <div><strong>${user.username}</strong></div>
+  `;
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+  });
+
+  // Modal refs
+  const overlay = document.getElementById('overlay');
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const ternakForm = document.getElementById('ternakForm');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const addBtn = document.getElementById('addBtn');
+
+  const fotoInput = document.getElementById('foto');
+  const previewFoto = document.getElementById('previewFoto');
+  const previewInfo = document.getElementById('previewInfo');
+  const keteranganSelect = document.getElementById('keterangan_select');
+  const keteranganLain = document.getElementById('keterangan_lain');
+
+  function openModal(title, data = null) {
+    modalTitle.textContent = title;
+    overlay.style.display = 'block';
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+
+    if (data) {
+      // edit mode: isi form dengan data
+      document.getElementById('ternakId').value = data.id || '';
+      document.getElementById('nama_peternak').value = data.nama_peternak || '';
+      document.getElementById('tanggal_kejadian').value = data.tanggal_kejadian ? data.tanggal_kejadian.split('T')[0] : '';
+      document.getElementById('jenis_laporan').value = data.jenis_laporan || '';
+      document.getElementById('jumlah_ternak').value = data.jumlah_ternak || '';
+      document.getElementById('lokasi_kejadian').value = data.lokasi_kejadian || '';
+
+      // keterangan handling
+      const k = data.keterangan || '';
+      if (['sapi potong', 'sapi perah', 'domba', 'kambing', 'ayam petelur'].includes(k)) {
+        keteranganSelect.value = k;
+        keteranganLain.style.display = 'none';
+        keteranganLain.value = '';
+        keteranganLain.required = false;
+      } else if (k) {
+        keteranganSelect.value = 'lainnya';
+        keteranganLain.style.display = 'block';
+        keteranganLain.value = k;
+        keteranganLain.required = true;
+      } else {
+        keteranganSelect.value = '';
+        keteranganLain.style.display = 'none';
+        keteranganLain.value = '';
+        keteranganLain.required = false;
+      }
+
+      // foto preview (handle absolute/relative path)
+      const fotoPath = data.foto || '';
+      if (fotoPath) {
+        const src = fotoPath.startsWith('/') ? API_URL + fotoPath : fotoPath;
+        previewFoto.src = src;
+        previewFoto.style.display = 'block';
+        previewInfo.textContent = 'Foto saat ini';
+      } else {
+        previewFoto.style.display = 'none';
+        previewInfo.textContent = '';
+      }
+
+      // reset input file
+      fotoInput.value = '';
+    } else {
+      // tambah mode: reset form
+      ternakForm.reset();
+      document.getElementById('ternakId').value = '';
+      document.getElementById('nama_peternak').value = user.username;
+      keteranganSelect.value = '';
+      keteranganLain.style.display = 'none';
+      keteranganLain.value = '';
+      keteranganLain.required = false;
+      previewFoto.style.display = 'none';
+      previewInfo.textContent = '';
+    }
+  }
+
+  function closeModal() {
+    overlay.style.display = 'none';
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  addBtn.addEventListener('click', () => openModal('Tambah Data Ternak'));
+  closeModalBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+
+  // show/hide keterangan lain
+  keteranganSelect.addEventListener('change', () => {
+    if (keteranganSelect.value === 'lainnya') {
+      keteranganLain.style.display = 'block';
+      keteranganLain.required = true;
+    } else {
+      keteranganLain.style.display = 'none';
+      keteranganLain.required = false;
+      keteranganLain.value = '';
+    }
+  });
+
+  // preview foto on file select
+  fotoInput.addEventListener('change', () => {
+    const f = fotoInput.files[0];
+    if (!f) {
+      previewFoto.style.display = 'none';
+      previewInfo.textContent = '';
+      return;
+    }
+    const url = URL.createObjectURL(f);
+    previewFoto.src = url;
+    previewFoto.style.display = 'block';
+    previewInfo.textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
+  });
+
+  // ambil data ternak user dari backend
+  async function fetchTernak() {
+    try {
+      const res = await fetch(`${API_URL}/ternak/user/${user.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Gagal mengambil data ternak');
+        return;
+      }
+
+      const tbody = document.querySelector('#ternakTable tbody');
+      tbody.innerHTML = '';
+
+      if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:18px; color:var(--muted)">Tidak ada data ternak.</td></tr>';
+        return;
+      }
+
+      data.forEach(item => {
+        const fotoCell = item.foto
+          ? `<img class="thumb" src="${item.foto.startsWith('/') ? API_URL + item.foto : item.foto}" alt="foto" />`
+          : '-';
+        const keterangan = item.keterangan || '-';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${escapeHtml(item.nama_peternak)}</td>
+          <td>${item.tanggal_kejadian ? (new Date(item.tanggal_kejadian)).toLocaleDateString() : '-'}</td>
+          <td>${escapeHtml(item.jenis_laporan || '-')}</td>
+          <td>${item.jumlah_ternak || '-'}</td>
+          <td>${escapeHtml(item.lokasi_kejadian || '-')}</td>
+          <td>${escapeHtml(keterangan)}</td>
+          <td>${fotoCell}</td>
+          <td>
+            <button class="editBtn" data-id="${item.id}">Edit</button>
+            <button class="deleteBtn ghost" data-id="${item.id}">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // attach listeners untuk tombol edit dan hapus
+      document.querySelectorAll('.editBtn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const id = e.target.dataset.id;
+          const record = data.find(d => String(d.id) === String(id));
+          if (record) openModal('Edit Data Ternak', record);
+          else alert('Data tidak ditemukan di cache.');
+        });
+      });
+
+      document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', async e => {
+          const id = e.target.dataset.id;
+          if (!confirm(`Hapus data ID ${id} ?`)) return;
+          try {
+            const res = await fetch(`${API_URL}/ternak/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const r = await res.json();
+            if (!res.ok) throw new Error(r.error || r.message || 'Gagal hapus');
+            alert('Berhasil dihapus');
+            fetchTernak();
+          } catch (err) {
+            alert('Gagal hapus: ' + err.message);
+          }
+        });
+      });
+
+    } catch (err) {
+      alert('Gagal mengambil data ternak: ' + err.message);
+    }
+  }
+
+  // submit form tambah/edit ternak
+  ternakForm.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const id = document.getElementById('ternakId').value;
+    const formData = new FormData();
+
+    formData.append('nama_peternak', document.getElementById('nama_peternak').value.trim());
+    formData.append('tanggal_kejadian', document.getElementById('tanggal_kejadian').value);
+    formData.append('jenis_laporan', document.getElementById('jenis_laporan').value);
+    formData.append('jumlah_ternak', document.getElementById('jumlah_ternak').value);
+    formData.append('lokasi_kejadian', document.getElementById('lokasi_kejadian').value.trim());
+
+    // keterangan bisa dari select atau input lainnya
+    const selectedK = keteranganSelect.value;
+    if (selectedK === 'lainnya') {
+      formData.append('keterangan', keteranganLain.value.trim());
+    } else {
+      formData.append('keterangan', selectedK);
+    }
+
+    // pastikan ada id_peternak untuk backend
+    formData.append('id_peternak', user.id);
+
+    // foto optional
+    const fotoFile = fotoInput.files[0];
+    if (fotoFile) formData.append('foto', fotoFile);
+
+   try {
+  let res;
+  if (id) {
+    // update data ternak
+    res = await fetch(`${API_URL}/ternak/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+        // jangan atur 'Content-Type' karena FormData
+      },
+      body: formData
+    });
+  } else {
+    // tambah data ternak
+    res = await fetch(`${API_URL}/ternak`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+  }
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
+  alert('Data berhasil disimpan');
+  closeModal();
+  fetchTernak();
+
+} catch (err) {
+  alert('Error: ' + err.message);
+}
+  });
+
+  // fungsi escape html untuk mencegah XSS di tabel
+  function escapeHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  // inisialisasi: ambil data ternak user saat halaman siap
+  fetchTernak();
+</script>
+
+</body>
+</html>
