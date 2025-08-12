@@ -364,9 +364,94 @@ body.modal-open {
 
 
 
-  </style>
-</head>
+input[type="number"],
+input[type="text"],
+select,
+textarea,
+input[type="file"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
 
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus,
+textarea:focus,
+input[type="file"]:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.checkbox-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+#fotoPreview {
+  display: block;
+  margin-top: 12px;
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  object-fit: contain;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+button[type="submit"],
+#btnLihatChecklist {
+  margin-top: 20px;
+  padding: 10px 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"] {
+  background-color: #28a745;
+  color: white;
+  margin-right: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+#btnLihatChecklist {
+  background-color: #007bff;
+  color: white;
+}
+
+#btnLihatChecklist:hover {
+  background-color: #0056b3;
+}
+</style>
 <body class="p-4">
   <nav class="navbar">
   <div class="navbar-left">
@@ -410,124 +495,253 @@ body.modal-open {
         </div>
         <div class="modal-body">
           <div id="detail-peternak"></div>
-          <a href="chek.html"><button class="btn btn-success mt-3" id="btnAddChecklist">Tambah Checklist</button></a>
+          <button class="btn btn-success mt-3" id="btnAddChecklist">Tambah Checklist</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Form Checklist
-  <div class="modal fade" id="modalChecklist" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5>Form Checklist</h5>
-        </div>
-        <div class="modal-body">
-          <form id="formChecklist">
-            <input type="hidden" id="id_ternak" name="id_ternak" />
-            <input type="text" name="nama_petugas" placeholder="Nama Petugas" class="form-control" required />
-            <select name="status" class="form-control">
-              <option value="Selesai">Selesai</option>
-              <option value="Pending">Pending</option>
-            </select>
-            <textarea name="catatan_petugas" placeholder="Catatan" class="form-control"></textarea>
-            <button class="btn btn-primary">Simpan</button>
-          </form>
-        </div>
+  <!-- Modal Form Checklist -->
+<div class="modal fade" id="modalChecklist" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Form Checklist</h5>
+        <button type="button" class="modal-close-btn" data-bs-dismiss="modal" aria-label="Close">&times;</button>
       </div>
-    </div> -->
+      <div class="modal-body">
+        <form id="formChecklist">
+          <form id="formChecklist">
+  <input type="hidden" name="id" id="checklistId" />
+
+  <label for="id_ternak">ID Ternak (Isi manual):</label>
+  <input type="number" name="id_ternak" id="id_ternak" placeholder="Masukkan ID Ternak" required />
+
+  <label for="nama_petugas">Nama Petugas:</label>
+  <input type="text" name="nama_petugas" id="namaPetugas" placeholder="Isi nama Anda" required />
+
+  <label for="id_petugas">ID Petugas:</label>
+  <input type="number" name="id_petugas" id="idPetugas" placeholder="Isi ID Anda" required />
+
+  <label for="id_laporan">ID Laporan:</label>
+  <input type="number" name="id_laporan" id="id_laporan" placeholder="Masukkan ID Laporan" required />
+
+  <label>Check List:</label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" name="check_lokasi" value="1" /> Lokasi</label>
+    <label><input type="checkbox" name="check_sesuai_jumlah" value="1" /> Sesuai Jumlah</label>
+    <label><input type="checkbox" name="check_ada_foto" value="1" /> Ada Foto</label>
+    <label><input type="checkbox" name="check_lengkap" value="1" /> Lengkap</label>
   </div>
+
+  <label for="status">Status:</label>
+  <select name="status" id="status" required>
+    <option value="">-- Pilih Status --</option>
+    <option value="Terverifikasi">Terverifikasi</option>
+    <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+    <option value="Ditolak">Ditolak</option>
+  </select>
+
+  <label for="catatan_petugas">Catatan Petugas:</label>
+  <textarea name="catatan_petugas" id="catatan_petugas" placeholder="Tambahkan catatan jika perlu"></textarea>
+
+  <label for="foto">Foto (Upload file):</label>
+  <input type="file" name="foto" id="foto" accept="image/*" />
+
+  <img id="fotoPreview" alt="Preview Foto" />
+
+  <button type="submit">Simpan</button>
+  <button id="btnLihatChecklist">📋 Lihat Daftar Checklist</button>
+</form>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const API_URL = "http://localhost:3000";
-    let previewInterval = null;
+let previewInterval = null;
 
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('token');
-      window.location.href = 'index.html';
+// Logout button: hapus token lalu redirect ke halaman login/index
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('token');
+  window.location.href = 'index.html';
+});
+
+// Fungsi load data ternak dari backend, dan tampilkan di tabel
+function loadTernak() {
+  $.get(API_URL + "/ternak", (data) => {
+    let rows = "";
+    data.forEach((item) => {
+      rows += `<tr>
+        <td>${item.id}</td>
+        <td>${item.nama_peternak}</td>
+        <td>${item.jumlah_ternak}</td>
+        <td>${item.lokasi_kejadian}</td>
+        <td>${item.tanggal_kejadian}</td>
+        <td>${item.jenis_laporan}</td>
+        <td>${item.keterangan}</td>
+        <td>${item.foto}</td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick="showDetail(${item.id_peternak})">Preview</button>
+        </td>
+      </tr>`;
     });
+    $("#table-ternak tbody").html(rows);
+  });
+}
 
-    function loadTernak() {
-      $.get(API_URL + "/ternak", (data) => {
-        let rows = "";
-        data.forEach((item) => {
-          rows += `<tr>
-            <td>${item.id}</td>
-            <td>${item.nama_peternak}</td>
-            <td>${item.jumlah_ternak}</td>
-            <td>${item.lokasi_kejadian}</td>
-            <td>${item.tanggal_kejadian}</td>
-            <td>${item.jenis_laporan}</td>
-            <td>${item.keterangan}</td>
-            <td>${item.foto}</td>
-            <td>
-              <button class="btn btn-info btn-sm" onclick="showDetail(${item.id_peternak})">Preview</button>
-            </td>
-          </tr>`;
-        });
-        $("#table-ternak tbody").html(rows);
-      });
-    }
+// Modal bootstrap instances (gunakan modal Bootstrap untuk detail dan checklist)
+const modalDetail = new bootstrap.Modal(document.getElementById("modalDetail"));
+const modalChecklist = new bootstrap.Modal(document.getElementById("modalChecklist"));
 
-    function showDetail(id_peternak) {
-      if (previewInterval) clearInterval(previewInterval);
+// Variabel untuk menyimpan ID checklist jika sedang edit
+let editChecklistId = null;
 
-      function loadPreview() {
-        $.get(API_URL + `/ternak/user/${id_peternak}`, (data) => {
-          if (data.length === 0) {
-            $("#detail-peternak").html("<p class='text-danger'>Data peternak tidak ditemukan</p>");
-            // $("#checklist-body").html("");
-            return;
-          }
-          const pet = data[0];
-          $("#detail-peternak").html(`
-            <p><strong>Nama:</strong> ${pet.username || pet.nama_peternak}</p>
-            <p><strong>Email:</strong> ${pet.email || '-'}</p>
-            <p><strong>Jumlah Ternak:</strong> ${pet.jumlah_ternak}</p>
-            <p><strong>Lokasi:</strong> ${pet.lokasi_kejadian}</p>
-            <p><strong>Tanggal Kejadian:</strong> ${pet.tanggal_kejadian}</p>
-            <p><strong>Jenis Laporan:</strong> ${pet.jenis_laporan}</p>
-            <p><strong>Keterangan:</strong> ${pet.keterangan}</p>
-            <p><strong>Foto:</strong> ${pet.foto}</p>
-          `);
-          $("#id_ternak").val(pet.id);
+function loadTernak() {
+  $.get(API_URL + "/ternak", (data) => {
+    let rows = "";
+    data.forEach((item) => {
+      rows += `<tr>
+        <td>${item.id}</td>
+        <td>${item.nama_peternak}</td>
+        <td>${item.jumlah_ternak}</td>
+        <td>${item.lokasi_kejadian}</td>
+        <td>${item.tanggal_kejadian}</td>
+        <td>${item.jenis_laporan}</td>
+        <td>${item.keterangan}</td>
+        <td>${item.foto ? `<img src="${item.foto}" alt="Foto" width="50"/>` : "-"}</td>
+        <td>
+          <button class="btn btn-info btn-sm" onclick="showDetail(${item.id_peternak})">Preview</button>
+        </td>
+      </tr>`;
+    });
+    $("#table-ternak tbody").html(rows);
+  });
+}
 
-          /*
-          $.get(API_URL+`/checklist/ternak/${pet.id}`, cl=>{
-            let clRows = "";
-            if(cl.length === 0) {
-              clRows = `<tr><td colspan="4" class="text-center">Belum ada checklist</td></tr>`;
-            } else {
-              cl.forEach(c=>{
-                let statusClass = c.status === "Selesai" ? "text-success fw-bold" : "text-danger fw-bold";
-                clRows += `<tr>
-                  <td>${c.id}</td>
-                  <td>${c.nama_petugas}</td>
-                  <td class="${statusClass}">${c.status}</td>
-                  <td>${c.catatan_petugas}</td>
-                </tr>`;
-              });
-            }
-            $("#checklist-body").html(clRows);
-          });
-          */
-        });
+// Fungsi tampilkan detail peternak dan checklist terkait
+function showDetail(id_peternak) {
+  if (previewInterval) clearInterval(previewInterval);
+
+  function loadPreview() {
+    $.get(API_URL + `/ternak/user/${id_peternak}`, (data) => {
+      if (!data || data.length === 0) {
+        $("#detail-peternak").html("<p class='text-danger'>Data peternak tidak ditemukan</p>");
+        $("#checklist-body").html("");
+        return;
       }
+      const pet = data[0];
+      $("#detail-peternak").html(`
+        <p><strong>Nama:</strong> ${pet.username || pet.nama_peternak}</p>
+        <p><strong>Email:</strong> ${pet.email || '-'}</p>
+        <p><strong>Jumlah Ternak:</strong> ${pet.jumlah_ternak}</p>
+        <p><strong>Lokasi:</strong> ${pet.lokasi_kejadian}</p>
+        <p><strong>Tanggal Kejadian:</strong> ${pet.tanggal_kejadian}</p>
+        <p><strong>Jenis Laporan:</strong> ${pet.jenis_laporan}</p>
+        <p><strong>Keterangan:</strong> ${pet.keterangan}</p>
+      `);
 
-      // load pertama kali
-      loadPreview();
-      // refresh otomatis setiap 5 detik
-      previewInterval = setInterval(loadPreview, 5000);
+      // Set hidden input untuk form checklist
+      $("#formChecklist [name='id_ternak']").val(pet.id);
 
-      new bootstrap.Modal(document.getElementById("modalDetail")).show();
+      // Load checklist ternak
+      $.get(API_URL + `/checklist/ternak/${pet.id}`, (checklists) => {
+        let clRows = "";
+        if (!checklists || checklists.length === 0) {
+          clRows = `<tr><td colspan="4" class="text-center">Belum ada checklist</td></tr>`;
+        } else {
+          checklists.forEach(c => {
+            const statusClass = c.status === "Selesai" ? "text-success fw-bold" : "text-danger fw-bold";
+            clRows += `<tr>
+              <td>${c.id}</td>
+              <td>${c.nama_petugas}</td>
+              <td class="${statusClass}">${c.status}</td>
+              <td>${c.catatan_petugas || ""}</td>
+              <td>
+                <button class="btn btn-sm btn-warning" onclick="editChecklist(${c.id})">Edit</button>
+              </td>
+            </tr>`;
+          });
+        }
+        $("#checklist-body").html(clRows);
+      });
+    });
+  }
+
+  loadPreview();
+  previewInterval = setInterval(loadPreview, 5000);
+  modalDetail.show();
+}
+// Tombol tambah checklist, reset form & buka modal
+$("#btnAddChecklist").on("click", () => {
+  editChecklistId = null;
+  $("#formChecklist")[0].reset();
+  $("#formChecklist [name='id_ternak']").val(""); // reset ternak id
+  modalChecklist.show();
+});
+
+// Submit form checklist (add/update)
+$("#formChecklist").on("submit", function (e) {
+  e.preventDefault();
+
+  const formDataArray = $(this).serializeArray();
+  let dataObj = {};
+
+  formDataArray.forEach(f => {
+    if (f.name === "check_lokasi" || f.name === "check_sesuai" || f.name === "check_lengkap") {
+      dataObj[f.name] = true;
+    } else {
+      dataObj[f.name] = f.value;
     }
+  });
 
-    $(document).ready(loadTernak);
-  </script>
+  // Checkbox yang tidak dicentang
+  if (!("check_lokasi" in dataObj)) dataObj.check_lokasi = false;
+  if (!("check_sesuai" in dataObj)) dataObj.check_sesuai = false;
+  if (!("check_lengkap" in dataObj)) dataObj.check_lengkap = false;
 
-</body>
+  let ajaxOptions = {
+    url: API_URL + "/checklist",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(dataObj),
+  };
 
-</html>
+  if (editChecklistId) {
+    ajaxOptions.url = API_URL + "/checklist/" + editChecklistId;
+    ajaxOptions.method = "PUT";
+  }
+
+  $.ajax(ajaxOptions)
+    .done(() => {
+      alert(editChecklistId ? "Checklist berhasil diupdate!" : "Checklist berhasil disimpan!");
+      modalChecklist.hide();
+      editChecklistId = null;
+      showDetail(dataObj.id_ternak || $("#formChecklist [name='id_ternak']").val());
+    })
+    .fail(() => {
+      alert(editChecklistId ? "Gagal update checklist" : "Gagal menyimpan checklist");
+    });
+});
+
+
+// Fungsi edit checklist (isi form checklist dengan data dari backend)
+function editChecklist(id) {
+  $.get(API_URL + "/checklist/" + id, (data) => {
+    editChecklistId = id;
+    $("#formChecklist [name='id_petugas']").val(data.id_petugas);
+    $("#formChecklist [name='id_laporan']").val(data.id_laporan);
+    $("#formChecklist [name='check_lokasi']").prop("checked", data.check_lokasi);
+    $("#formChecklist [name='check_sesuai']").prop("checked", data.check_sesuai);
+    $("#formChecklist [name='check_lengkap']").prop("checked", data.check_lengkap);
+    $("#formChecklist [name='catatan_petugas']").val(data.catatan_petugas);
+    $("#formChecklist [name='id_ternak']").val(data.id_ternak);
+    modalChecklist.show();
+  });
+}
+
+
+
+// Inisialisasi load data ternak saat halaman siap
+$(document).ready(loadTernak);
+
+</script>
+
