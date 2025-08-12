@@ -26,7 +26,7 @@
     }
     .wrap{
       width:100%;
-      max-width:1500px;
+      max-width:100%;
       background:var(--card);
       box-shadow:var(--shadow);
       border-radius:16px;
@@ -339,312 +339,296 @@
   </div>
 
   <script>
-  const API_URL = 'http://localhost:3000';
-  let token = localStorage.getItem('token');
+    const API_URL = 'http://localhost:3000';
+    let token = localStorage.getItem('token');
 
-  function parseJwt(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
-      return JSON.parse(jsonPayload);
-    } catch {
-      return null;
-    }
-  }
-
-  if (!token) {
-    alert('Silakan login dulu!');
-    window.location.href = 'index.html';
-  }
-
-  const user = parseJwt(token);
-  if (!user || user.akses !== 'peternak') {
-    alert('Anda bukan peternak!');
-    window.location.href = 'index.html';
-  }
-
-  // Profil
-  document.getElementById('profileInfo').innerHTML = `
-    <div><strong>ID:</strong> ${user.id}</div>
-    <div><strong>${user.username}</strong></div>
-  `;
-
-  // Logout
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('token');
-    window.location.href = 'index.html';
-  });
-
-  // Modal refs
-  const overlay = document.getElementById('overlay');
-  const modal = document.getElementById('modal');
-  const modalTitle = document.getElementById('modalTitle');
-  const ternakForm = document.getElementById('ternakForm');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const addBtn = document.getElementById('addBtn');
-
-  const fotoInput = document.getElementById('foto');
-  const previewFoto = document.getElementById('previewFoto');
-  const previewInfo = document.getElementById('previewInfo');
-  const keteranganSelect = document.getElementById('keterangan_select');
-  const keteranganLain = document.getElementById('keterangan_lain');
-
-  function openModal(title, data = null) {
-    modalTitle.textContent = title;
-    overlay.style.display = 'block';
-    modal.style.display = 'block';
-    modal.setAttribute('aria-hidden', 'false');
-
-    if (data) {
-      // edit mode: isi form dengan data
-      document.getElementById('ternakId').value = data.id || '';
-      document.getElementById('nama_peternak').value = data.nama_peternak || '';
-      document.getElementById('tanggal_kejadian').value = data.tanggal_kejadian ? data.tanggal_kejadian.split('T')[0] : '';
-      document.getElementById('jenis_laporan').value = data.jenis_laporan || '';
-      document.getElementById('jumlah_ternak').value = data.jumlah_ternak || '';
-      document.getElementById('lokasi_kejadian').value = data.lokasi_kejadian || '';
-
-      // keterangan handling
-      const k = data.keterangan || '';
-      if (['sapi potong', 'sapi perah', 'domba', 'kambing', 'ayam petelur'].includes(k)) {
-        keteranganSelect.value = k;
-        keteranganLain.style.display = 'none';
-        keteranganLain.value = '';
-        keteranganLain.required = false;
-      } else if (k) {
-        keteranganSelect.value = 'lainnya';
-        keteranganLain.style.display = 'block';
-        keteranganLain.value = k;
-        keteranganLain.required = true;
-      } else {
-        keteranganSelect.value = '';
-        keteranganLain.style.display = 'none';
-        keteranganLain.value = '';
-        keteranganLain.required = false;
+    function parseJwt(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(jsonPayload);
+      } catch {
+        return null;
       }
+    }
 
-      // foto preview (handle absolute/relative path)
-      const fotoPath = data.foto || '';
-      if (fotoPath) {
-        const src = fotoPath.startsWith('/') ? API_URL + fotoPath : fotoPath;
-        previewFoto.src = src;
-        previewFoto.style.display = 'block';
-        previewInfo.textContent = 'Foto saat ini';
+    if (!token) {
+      alert('Silakan login dulu!');
+      window.location.href = 'index.html';
+    }
+
+    const user = parseJwt(token);
+    if (!user || user.akses !== 'peternak') {
+      alert('Anda bukan peternak!');
+      window.location.href = 'index.html';
+    }
+
+    // Profil
+    document.getElementById('profileInfo').innerHTML = `
+      <div><strong>ID:</strong> ${user.id}</div>
+      <div><strong>${user.username}</strong></div>
+    `;
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    });
+
+    // Modal refs
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const ternakForm = document.getElementById('ternakForm');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const addBtn = document.getElementById('addBtn');
+
+    const fotoInput = document.getElementById('foto');
+    const previewFoto = document.getElementById('previewFoto');
+    const previewInfo = document.getElementById('previewInfo');
+    const keteranganSelect = document.getElementById('keterangan_select');
+    const keteranganLain = document.getElementById('keterangan_lain');
+
+    function openModal(title, data = null) {
+      modalTitle.textContent = title;
+      overlay.style.display = 'block';
+      modal.style.display = 'block';
+      modal.setAttribute('aria-hidden','false');
+
+      if (data) {
+        // edit
+        document.getElementById('ternakId').value = data.id || '';
+        document.getElementById('nama_peternak').value = data.nama_peternak || '';
+        document.getElementById('tanggal_kejadian').value = data.tanggal_kejadian ? data.tanggal_kejadian.split('T')[0] : '';
+        document.getElementById('jenis_laporan').value = data.jenis_laporan || '';
+        document.getElementById('jumlah_ternak').value = data.jumlah_ternak || '';
+        document.getElementById('lokasi_kejadian').value = data.lokasi_kejadian || '';
+
+        // keterangan handling
+        const k = data.keterangan || '';
+        if (['sapi potong','sapi perah','domba','kambing','ayam petelur'].includes(k)) {
+          keteranganSelect.value = k;
+          keteranganLain.style.display = 'none';
+        } else if(k){
+          keteranganSelect.value = 'lainnya';
+          keteranganLain.style.display = 'block';
+          keteranganLain.value = k;
+        } else {
+          keteranganSelect.value = '';
+          keteranganLain.style.display = 'none';
+          keteranganLain.value = '';
+        }
+
+        // foto preview (handle absolute/relative path)
+        const fotoPath = data.foto || '';
+        if (fotoPath) {
+          const src = fotoPath.startsWith('/') ? API_URL + fotoPath : fotoPath;
+          previewFoto.src = src;
+          previewFoto.style.display = 'block';
+          previewInfo.textContent = 'Foto saat ini';
+        } else {
+          previewFoto.style.display = 'none';
+          previewInfo.textContent = '';
+        }
+
+        // clear file input
+        fotoInput.value = '';
       } else {
+        // tambah
+        ternakForm.reset();
+        document.getElementById('ternakId').value = '';
+        document.getElementById('nama_peternak').value = user.username;
+        keteranganLain.style.display = 'none';
         previewFoto.style.display = 'none';
         previewInfo.textContent = '';
       }
-
-      // reset input file
-      fotoInput.value = '';
-    } else {
-      // tambah mode: reset form
-      ternakForm.reset();
-      document.getElementById('ternakId').value = '';
-      document.getElementById('nama_peternak').value = user.username;
-      keteranganSelect.value = '';
-      keteranganLain.style.display = 'none';
-      keteranganLain.value = '';
-      keteranganLain.required = false;
-      previewFoto.style.display = 'none';
-      previewInfo.textContent = '';
     }
-  }
 
-  function closeModal() {
-    overlay.style.display = 'none';
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden', 'true');
-  }
-
-  addBtn.addEventListener('click', () => openModal('Tambah Data Ternak'));
-  closeModalBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', closeModal);
-
-  // show/hide keterangan lain
-  keteranganSelect.addEventListener('change', () => {
-    if (keteranganSelect.value === 'lainnya') {
-      keteranganLain.style.display = 'block';
-      keteranganLain.required = true;
-    } else {
-      keteranganLain.style.display = 'none';
-      keteranganLain.required = false;
-      keteranganLain.value = '';
+    function closeModal() {
+      overlay.style.display = 'none';
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
     }
-  });
 
-  // preview foto on file select
-  fotoInput.addEventListener('change', () => {
-    const f = fotoInput.files[0];
-    if (!f) {
-      previewFoto.style.display = 'none';
-      previewInfo.textContent = '';
-      return;
-    }
-    const url = URL.createObjectURL(f);
-    previewFoto.src = url;
-    previewFoto.style.display = 'block';
-    previewInfo.textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
-  });
+    addBtn.addEventListener('click', () => openModal('Tambah Data Ternak'));
 
-  // ambil data ternak user dari backend
-  async function fetchTernak() {
-    try {
-      const res = await fetch(`${API_URL}/ternak/user/${user.id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+    closeModalBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
 
-      if (!res.ok) {
-        alert(data.error || 'Gagal mengambil data ternak');
+    // show/hide keterangan lain
+    keteranganSelect.addEventListener('change', () => {
+      if (keteranganSelect.value === 'lainnya') {
+        keteranganLain.style.display = 'block';
+        keteranganLain.required = true;
+      } else {
+        keteranganLain.style.display = 'none';
+        keteranganLain.required = false;
+        keteranganLain.value = '';
+      }
+    });
+
+    // preview foto on select
+    fotoInput.addEventListener('change', () => {
+      const f = fotoInput.files[0];
+      if (!f) {
+        previewFoto.style.display = 'none';
+        previewInfo.textContent = '';
         return;
       }
+      const url = URL.createObjectURL(f);
+      previewFoto.src = url;
+      previewFoto.style.display = 'block';
+      previewInfo.textContent = f.name + ' (' + Math.round(f.size/1024) + ' KB)';
+    });
 
-      const tbody = document.querySelector('#ternakTable tbody');
-      tbody.innerHTML = '';
+    // Fetch ternak data for this user
+    async function fetchTernak() {
+      console.log(typeof(fetchTernak))
+      try {
+        const res = await fetch(`${API_URL}/ternak/user/${user.id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || 'Gagal mengambil data ternak');
+          return;
+        }
+        const tbody = document.querySelector('#ternakTable tbody');
+        tbody.innerHTML = '';
+        if (!Array.isArray(data) || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:18px; color:var(--muted)">Tidak ada data ternak.</td></tr>';
+          return;
+        }
+        data.forEach(item => {
+          // const fotoCell = item.foto ? `<img class="thumb" src="${item.foto.startsWith('/') ? API_URL + item.foto : item.foto}" alt="foto" />` : '-';
+          const keterangan = item.keterangan || '-';
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${escapeHtml(item.nama_peternak)}</td>
+            <td>${item.tanggal_kejadian ? (new Date(item.tanggal_kejadian)).toLocaleDateString() : '-'}</td>
+            <td>${escapeHtml(item.jenis_laporan || '-')}</td>
+            <td>${item.jumlah_ternak || '-'}</td>
+            <td>${escapeHtml(item.lokasi_kejadian || '-')}</td>
+            <td>${escapeHtml(keterangan)}</td>
+            
+            <td>
+              <button class="editBtn" data-id="${item.id}">Edit</button>
+              <button class="deleteBtn ghost" data-id="${item.id}">Hapus</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
 
-      if (!Array.isArray(data) || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:18px; color:var(--muted)">Tidak ada data ternak.</td></tr>';
-        return;
+        // attach listeners
+        document.querySelectorAll('.editBtn').forEach(btn=>{
+          btn.addEventListener('click', async e=>{
+            const id = e.target.dataset.id;
+            const record = data.find(d=> String(d.id) === String(id));
+            if (record) openModal('Edit Data Ternak', record);
+            else alert('Data tidak ditemukan di cache.');
+          });
+        });
+
+        document.querySelectorAll('.deleteBtn').forEach(btn=>{
+          btn.addEventListener('click', async e=>{
+            const id = e.target.dataset.id;
+            if (!confirm('Hapus data ID ' + id + ' ?')) return;
+            try {
+              const res = await fetch(`${API_URL}/ternak/${id}`, {
+                method:'DELETE',
+                headers:{ 'Authorization': `Bearer ${token}` }
+              });
+              const r = await res.json();
+              if (!res.ok) throw new Error(r.error || r.message || 'Gagal hapus');
+              alert('Berhasil dihapus');
+              fetchTernak();
+            } catch(err){
+              alert('Gagal hapus: ' + err.message);
+            }
+          });
+        });
+      } catch (err) {
+        alert('Gagal mengambil data ternak: ' + err.message);
+      }
+    }
+
+    // submit form (POST/PUT)
+    ternakForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const jumlah = parseInt(document.getElementById('jumlah_ternak').value, 10);
+  if (isNaN(jumlah) || jumlah <= 0) {
+    alert('Jumlah ternak harus lebih besar dari 0');
+    return;
+  }
+      const id = document.getElementById('ternakId').value;
+      const formData = new FormData();
+
+      formData.append('nama_peternak', document.getElementById('nama_peternak').value.trim());
+      formData.append('tanggal_kejadian', document.getElementById('tanggal_kejadian').value);
+      formData.append('jenis_laporan', document.getElementById('jenis_laporan').value);
+      formData.append('jumlah_ternak', document.getElementById('jumlah_ternak').value);
+      formData.append('lokasi_kejadian', document.getElementById('lokasi_kejadian').value.trim());
+
+      // keterangan - either selected or custom
+      const selectedK = keteranganSelect.value;
+      if (selectedK === 'lainnya') {
+        formData.append('keterangan', keteranganLain.value.trim());
+      } else {
+        formData.append('keterangan', selectedK);
       }
 
-      data.forEach(item => {
-        const fotoCell = item.foto
-          ? `<img class="thumb" src="${item.foto.startsWith('/') ? API_URL + item.foto : item.foto}" alt="foto" />`
-          : '-';
-        const keterangan = item.keterangan || '-';
+      // use backend field name id_peternak
+      formData.append('id_peternak', user.id);
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.id}</td>
-          <td>${escapeHtml(item.nama_peternak)}</td>
-          <td>${item.tanggal_kejadian ? (new Date(item.tanggal_kejadian)).toLocaleDateString() : '-'}</td>
-          <td>${escapeHtml(item.jenis_laporan || '-')}</td>
-          <td>${item.jumlah_ternak || '-'}</td>
-          <td>${escapeHtml(item.lokasi_kejadian || '-')}</td>
-          <td>${escapeHtml(keterangan)}</td>
-          <td>${fotoCell}</td>
-          <td>
-            <button class="editBtn" data-id="${item.id}">Edit</button>
-            <button class="deleteBtn ghost" data-id="${item.id}">Hapus</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
+      const fotoFile = fotoInput.files[0];
+      if (fotoFile) formData.append('foto', fotoFile);
+      try {
+        let res;
+        if (id) {
+          res = await fetch(`${API_URL}/ternak/${id}`, {
+            method:'PUT',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+        } else {
+          res = await fetch(`${API_URL}/ternak`, {
+            method:'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+        }
 
-      // attach listeners untuk tombol edit dan hapus
-      document.querySelectorAll('.editBtn').forEach(btn => {
-        btn.addEventListener('click', e => {
-          const id = e.target.dataset.id;
-          const record = data.find(d => String(d.id) === String(id));
-          if (record) openModal('Edit Data Ternak', record);
-          else alert('Data tidak ditemukan di cache.');
-        });
-      });
+        const result = await res.json();
+        if (!res.ok) {
+          alert(result.error || result.message || 'Gagal menyimpan data');
+          return;
+        }
+        alert('Data berhasil disimpan!');
+        closeModal();
+        fetchTernak();
+      } catch (err) {
+        alert('Gagal menyimpan data: ' + err.message);
+      }
+    });
 
-      document.querySelectorAll('.deleteBtn').forEach(btn => {
-        btn.addEventListener('click', async e => {
-          const id = e.target.dataset.id;
-          if (!confirm(`Hapus data ID ${id} ?`)) return;
-          try {
-            const res = await fetch(`${API_URL}/ternak/${id}`, {
-              method: 'DELETE',
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const r = await res.json();
-            if (!res.ok) throw new Error(r.error || r.message || 'Gagal hapus');
-            alert('Berhasil dihapus');
-            fetchTernak();
-          } catch (err) {
-            alert('Gagal hapus: ' + err.message);
-          }
-        });
-      });
-
-    } catch (err) {
-      alert('Gagal mengambil data ternak: ' + err.message);
-    }
-  }
-
-  // submit form tambah/edit ternak
-  ternakForm.addEventListener('submit', async e => {
-    e.preventDefault();
-
-    const id = document.getElementById('ternakId').value;
-    const formData = new FormData();
-
-    formData.append('nama_peternak', document.getElementById('nama_peternak').value.trim());
-    formData.append('tanggal_kejadian', document.getElementById('tanggal_kejadian').value);
-    formData.append('jenis_laporan', document.getElementById('jenis_laporan').value);
-    formData.append('jumlah_ternak', document.getElementById('jumlah_ternak').value);
-    formData.append('lokasi_kejadian', document.getElementById('lokasi_kejadian').value.trim());
-
-    // keterangan bisa dari select atau input lainnya
-    const selectedK = keteranganSelect.value;
-    if (selectedK === 'lainnya') {
-      formData.append('keterangan', keteranganLain.value.trim());
-    } else {
-      formData.append('keterangan', selectedK);
+    // small helper to prevent XSS in table rendering
+    function escapeHtml(str){
+      if (!str && str !== 0) return '';
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
     }
 
-    // pastikan ada id_peternak untuk backend
-    formData.append('id_peternak', user.id);
-
-    // foto optional
-    const fotoFile = fotoInput.files[0];
-    if (fotoFile) formData.append('foto', fotoFile);
-
-   try {
-  let res;
-  if (id) {
-    // update data ternak
-    res = await fetch(`${API_URL}/ternak/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`
-        // jangan atur 'Content-Type' karena FormData
-      },
-      body: formData
-    });
-  } else {
-    // tambah data ternak
-    res = await fetch(`${API_URL}/ternak`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData
-    });
-  }
-
-  const result = await res.json();
-  if (!res.ok) throw new Error(result.error || 'Gagal menyimpan data');
-  alert('Data berhasil disimpan');
-  closeModal();
-  fetchTernak();
-
-} catch (err) {
-  alert('Error: ' + err.message);
-}
-  });
-
-  // fungsi escape html untuk mencegah XSS di tabel
-  function escapeHtml(str) {
-    if (!str && str !== 0) return '';
-    return String(str)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
-  // inisialisasi: ambil data ternak user saat halaman siap
-  fetchTernak();
-</script>
-
+    // init
+    fetchTernak();
+  </script>
 </body>
 </html>
