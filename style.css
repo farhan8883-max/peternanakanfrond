@@ -325,6 +325,7 @@ section {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+
 /* Input dan tombol */
 input {
   padding: 8px;
@@ -628,7 +629,7 @@ section.active {
 .card {
   background: #fff;
   border-radius: 12px;
-  padding: 0.5rem;
+  padding: 0.2rem;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -702,6 +703,7 @@ section.active {
 .button-container button:hover {
   background-color: #1e40af;
 }
+
 
 
 
