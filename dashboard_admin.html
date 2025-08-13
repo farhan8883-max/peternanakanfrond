@@ -26,13 +26,13 @@
           <span>Dashboard</span>
         </div>
         <div class="admin">
-          <span>Administrator</span>
           <span class="avatar" aria-hidden="true"><i class="ri-user-3-line"></i></span>
+          <span>Administrator</span>
       </div>
-      <!-- <span id="userInfo"></span>
-      <span id="userAccess"></span> -->
+      <span id="userInfo"></span>
+      <span id="userAccess"></span>
       <button id="logout" ><span class="avatar" aria-hidden="true"><i class="ri-user-3-line"></i></span> Logout</button>
-      <a href="registrasi.html" class="button-daftar">Daftar</a>
+      <a href="registrasi.html" class="button-daftar" style="background-color: #f59e0b;">Daftar</a>
     </div>
   </div>
 <div class="content">
@@ -89,8 +89,8 @@
         <tbody></tbody>
       </table>
     </div>
-    <button onclick="openModal('modalUser')">Tambah User</button>
-    <button onclick="exportTableToExcel('userTable', 'DataUser')">Export User</button>
+    <button onclick="openModal('modalUser')" style="background-color: rgb(0, 144, 0);">Tambah User</button>
+    <button onclick="exportTableToExcel('userTable', 'DataUser')" style="background-color: rgb(238, 32, 32);">Export User</button>
   </section>
 
   <!-- DAFTAR TERNAK -->
@@ -113,8 +113,8 @@
         <tbody></tbody>
       </table>
     </div>
-    <button onclick="openModal('modalTernak')">Tambah Ternak</button>
-    <button onclick="exportTernak()">Export Data Ternak</button>
+    <button onclick="openModal('modalTernak')" style="background-color: rgb(0, 144, 0);">Tambah Ternak</button>
+    <button onclick="exportTernak()" style="background-color: rgb(238, 32, 32);">Export Data Ternak</button>
   </section>
 
   <!-- DAFTAR CHECKLIST -->
@@ -136,7 +136,7 @@
         <tbody></tbody>
       </table>
     </div>
-    <button onclick="openModal('modalChecklist')">Tambah Checklist</button>
+    <button onclick="openModal('modalChecklist')" style="background-color: rgb(0, 144, 0);">Tambah Checklist</button>
   </section>
  </main>
   <!-- MODAL TAMBAH USER -->
