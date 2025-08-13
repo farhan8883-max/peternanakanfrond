@@ -1,1076 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard Ternak — Grafik, Kelompok & Tabel CRUD</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root{
-      --bg:#f4f6f8;
-      --card:#fff;
-      --muted:#6b7280;
-      --accent:#2563eb;
-      --success:#10b981;
-      --danger:#ef4444;
-      --radius:12px;
-      --glass: rgba(255,255,255,0.6);
-    }
-    *{box-sizing:border-box}
-    body{
-      font-family: Inter, system-ui, Arial, sans-serif;
-      margin:0;
-      background:var(--bg);
-      color:#111827;
-      padding:20px;
-    }
-    header{
-      display:flex;
-      gap:16px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-    h1{margin:0;font-size:20px}
-    .controls{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    select,input[type="date"], input[type="text"], input[type="number"]{
-      padding:8px 10px;
-      border-radius:8px;
-      border:1px solid #e5e7eb;
-      background:white;
-    }
-    button{
-      padding:8px 12px;
-      border-radius:8px;
-      border:0;
-      cursor:pointer;
-      background:var(--accent);
-      color:white;
-    }
-    .layout{
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:18px;
-    }
-    @media (max-width:980px){
-      .layout{grid-template-columns:1fr}
-    }
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:0 6px 18px rgba(15,23,42,0.06);
-    }
-
-    /* Chart & table containers */
-    .chart-wrap{ padding:12px; }
-    canvas{ width:100% !important; height:320px !important; }
-
-    /* Groups list */
-    .groups{ display:flex; flex-direction:column; gap:10px; margin-top:8px }
-    .group{ border:1px solid #eef2ff; border-radius:10px; overflow:hidden; background:#fff; }
-    .group-header{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; cursor:pointer; background:linear-gradient(90deg,#fff,#fbfbff); }
-    .group-title{ font-weight:600 }
-    .group-sub{ font-size:13px; color:var(--muted) }
-    .group-body{ display:none; padding:8px 12px 14px; border-top:1px solid #f1f5f9; }
-
-    /* records */
-    .record{ display:flex; gap:10px; padding:8px 0; border-bottom:1px dashed #f1f5f9; align-items:flex-start; font-size:14px; }
-    .record:last-child{ border-bottom:0 }
-    .badge{ min-width:48px; text-align:center; padding:6px 8px; border-radius:8px; background:#f3f4f6; font-weight:700; color:#111827; }
-    .meta{ flex:1 }
-    .meta p{ margin:0 }
-    .muted{ color:var(--muted); font-size:13px }
-    .keterangan{ margin-top:6px; color:#374151; font-size:13px }
-    .empty{ color:var(--muted); text-align:center; padding:18px 0 }
-
-    /* table */
-    .table-wrap{ margin-top:14px; overflow:auto; }
-    table { width:100%; border-collapse:collapse; background:var(--card); }
-    th, td { padding:10px; text-align:left; border-bottom:1px solid #eef2ff; font-size:14px; }
-    th { background:#fafafa; font-weight:600; position:sticky; top:0; z-index:1 }
-    .actions button{ margin-right:6px; padding:6px 8px; border-radius:6px; font-size:13px; }
-
-    .btn-primary{ background:var(--accent); color:white; border:0 }
-    .btn-danger{ background:var(--danger); color:white; border:0 }
-    .btn-ghost{ background:transparent; border:1px solid #e5e7eb; color:var(--muted) }
-
-    /* modal */
-    .modal{ display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; padding:20px; }
-    .modal.open{ display:flex }
-    .modal-card{ width:100%; max-width:720px; background:var(--card); border-radius:12px; padding:18px; box-shadow:0 12px 40px rgba(2,6,23,0.2); max-height:90vh; overflow:auto }
-    .modal-header{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .close-x{ cursor:pointer; background:transparent; border:0; font-size:20px; color:var(--muted) }
-    label{ display:block; font-size:13px; color:var(--muted); margin-top:8px; }
-    input[type="text"], input[type="date"], input[type="number"], textarea, select { width:100%; padding:8px; margin-top:6px; border-radius:8px; border:1px solid #e5e7eb }
-    textarea { min-height:80px; resize:vertical }
-    .row { display:flex; gap:8px }
-    .col { flex:1 }
-
-    .hint{ color:var(--muted); font-size:13px; margin-top:10px; text-align:right }
-
-    /* small helpers */
-    .flex { display:flex; gap:8px; align-items:center }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manajemen Data Ternak</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
 
-  <header>
-    <div>
-      <h1>Dashboard Ternak — Grafik & Kelompok</h1>
-      <div class="muted" id="subtitle">Memuat...</div>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="Logo Data Ternak">
+      Data Ternak
     </div>
-
-    <div class="controls">
-      <label class="muted" for="dateFilter">Tanggal:</label>
-      <input type="date" id="dateFilter" />
-      <select id="predef">
-        <option value="today">Hari ini</option>
-        <option value="all">Semua tanggal</option>
-      </select>
-      <button id="refreshBtn">Refresh</button>
+    <div class="burger" id="burgerMenu">
+      <div class="line1"></div>
+      <div class="line2"></div>
+      <div class="line3"></div>
     </div>
-  </header>
-
-  <main class="layout">
-    <!-- LEFT: Chart + Table -->
-    <section class="card">
-      <div class="chart-wrap">
-        <canvas id="chartTernak" aria-label="Grafik jumlah ternak per jenis laporan"></canvas>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-        <h3 style="margin:0">Tabel Peternak</h3>
-        <div class="flex">
-          <button id="addBtn" class="btn-primary">+ Tambah</button>
-          <button id="syncBtn" class="btn-ghost">Sinkron ke API</button>
+    <div class="menu" id="menuNav">
+      <div class="breadcrumbss">
+          <i class="ri-dashboard-3-line"></i>
+          <span>Dashboard</span>
         </div>
+        <div class="admin">
+          <span>Administrator</span>
+          <span class="avatar" aria-hidden="true"><i class="ri-user-3-line"></i></span>
       </div>
+      <!-- <span id="userInfo"></span>
+      <span id="userAccess"></span> -->
+      <button id="logout" ><span class="avatar" aria-hidden="true"><i class="ri-user-3-line"></i></span> Logout</button>
+      <a href="registrasi.html" class="button-daftar">Daftar</a>
+    </div>
+  </div>
+<div class="content">
+      <header class="topbar">
+        <div class="breadcrumbs">
+          <i class="ri-dashboard-3-line"></i>
+          <span>Dashboard</span>
+        </div>
+        <div class="admin">
+          <span>Administrator</span>
+          <span class="avatar" aria-hidden="true"><i class="ri-user-3-line"></i></span>
+        </div>
+      </header>
+         
+     <div class="grid stats" role="list">
+          <div class="card" role="listitem">
+            <div class="icon"><i class="ri-file-list-3-line"></i></div>
+            <span class="label">TOTAL LAPORAN</span>
+            <div class="value">3</div>
+          </div>
+          <div class="card" role="listitem">
+            <div class="icon" style="color:#16a34a"><i class="ri-bear-smile-line"></i></div>
+            <span class="label">LAPORAN LAHIR</span>
+            <div class="value">1</div>
+          </div>
+          <div class="card" role="listitem">
+            <div class="icon" style="color:#f59e0b"><i class="ri-heart-2-line"></i></div>
+            <span class="label">LAPORAN MATI</span>
+            <div class="value">1</div>
+          </div>
+          <div class="card" role="listitem">
+            <div class="icon" style="color:#2563eb"><i class="ri-team-line"></i></div>
+            <span class="label">TOTAL USER</span>
+            <div class="value">12</div>
+          </div>
+    </div>
+ <main>
+  
 
-      <div class="table-wrap">
-        <table id="peternakTable">
-          <thead>
-            <tr>
-              <th style="width:46px">#</th>
-              <th>Nama</th>
-              <th style="width:110px">ID Peternak</th>
-              <th style="width:120px">Tanggal</th>
-              <th>Jenis</th>
-              <th style="width:96px">Jumlah</th>
-              <th>Lokasi</th>
-              <th>Keterangan</th>
-              <th style="width:170px">Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+  <!-- DAFTAR USER -->
+  <section id="userSection">
+    <h2>Daftar User</h2>
+    <div class="table-container" id="userTableContainer">
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>HP</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button onclick="openModal('modalUser')">Tambah User</button>
+  </section>
 
-      <div class="hint">Auto-refresh tiap 30s · Klik nama kelompok untuk melihat keterangan tiap record · Data tersimpan ke localStorage jika API tidak tersedia</div>
-    </section>
+  <!-- DAFTAR TERNAK -->
+  <section id="ternakSection">
+    <h2>Daftar Ternak</h2>
+    <div class="table-container" id="ternakTableContainer">
+      <table id="ternakTable">
+        <thead>
+          <tr>
+            <th>Nama Peternak</th>
+            <th>ID Peternak</th>
+            <th>Tanggal Kejadian</th>
+            <th>Jenis Laporan</th>
+            <th>Jumlah Ternak</th>
+            <th>Lokasi Kejadian</th>
+            <th>Keterangan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button onclick="openModal('modalTernak')">Tambah Ternak</button>
+  </section>
 
-    <!-- RIGHT: Groups -->
-    <aside class="card">
-      <h3 style="margin-top:0">Kelompok & Rincian</h3>
-      <div class="groups" id="groupsContainer">
-        <!-- will fill with groups -->
-      </div>
-    </aside>
-  </main>
-
-  <!-- Modal: Preview / Edit / Create -->
-  <div id="modal" class="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-header">
-        <h3 id="modalTitle">Preview</h3>
-        <button class="close-x" id="closeModal" title="Tutup">&times;</button>
-      </div>
-
-      <div id="modalBody" style="margin-top:10px"></div>
-
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
-        <button id="modalDelete" class="btn-danger" style="display:none">Hapus</button>
-        <button id="modalSave" class="btn-primary" style="display:none">Simpan</button>
-        <button id="modalClose" class="btn-ghost">Tutup</button>
-      </div>
+  <!-- DAFTAR CHECKLIST -->
+  <section  id="checklistSection">
+    <h2>Daftar Checklist</h2>
+    <div class="table-container" id="checklistTableContainer">
+      <table id="checklistTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nama Peternak</th>
+            <th>Jumlah Ternak</th>
+            <th>Lokasi Kejadian</th>
+            <th>Nama Petugas</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button onclick="openModal('modalChecklist')">Tambah Checklist</button>
+  </section>
+ </main>
+  <!-- MODAL TAMBAH USER -->
+  <div id="modalUser" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modalUser')">&times;</span>
+      <h2>Tambah User</h2>
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
+      <input id="email" placeholder="Email">
+      <input id="hp" placeholder="HP">
+      <input id="akses" placeholder="Akses">
+      <button onclick="addUser()">Tambah</button>
     </div>
   </div>
 
-<script>
-/*
-  Full single-file implementation:
-  - Chart.js chart (bar)
-  - Groups list (mati, lahir, dipotong, hilang, lainnya)
-  - Table with CRUD (create, preview, edit, delete)
-  - Modal used for preview & edit & create
-  - API attempts with fallback to localStorage
-  - Auto-refresh every 30s and daily refresh at midnight
-*/
+  <div class="button-container">
+    <button onclick="showSection('userSection')">Daftar User</button>
+    <button onclick="showSection('ternakSection')">Daftar Ternak</button>
+    <button onclick="showSection('checklistSection')">Daftar Checklist</button>
+  </div>
 
-/* -----------------------------
-   Configuration: sesuaikan API
-   ----------------------------- */
-const API_BASE = 'http://localhost:3000/api/ternak';
-const API_TRIES = API_BASE ? [API_BASE] : []; // jika API_BASE null, kosongkan
-
-/* -----------------------------
-   Sample fallback data (dipakai jika tidak ada API & localStorage kosong)
-   ----------------------------- */
-const SAMPLE = [
-  {"id":1,"nama_peternak":"farrel","id_peternak":23,"tanggal_kejadian":"2025-08-08","jenis_laporan":"mati","jumlah_ternak":2,"lokasi_kejadian":"soreang","keterangan":"sapi potong"},
-  {"id":2,"nama_peternak":"farrel","id_peternak":23,"tanggal_kejadian":"2025-08-08","jenis_laporan":"hilang","jumlah_ternak":2,"lokasi_kejadian":"soreang","keterangan":"sapi perah"},
-  {"id":8,"nama_peternak":"farrel","id_peternak":23,"tanggal_kejadian":"2025-08-08","jenis_laporan":"lahir","jumlah_ternak":2,"lokasi_kejadian":"soreang","keterangan":"ayam petelur"},
-  {"id":24,"nama_peternak":"andika1","id_peternak":24,"tanggal_kejadian":"2025-08-10","jenis_laporan":"lahir","jumlah_ternak":1,"lokasi_kejadian":"soreang","keterangan":"sapi perah"}
-];
-
-/* -----------------------------
-   Normalisasi jenis laporan
-   ----------------------------- */
-const CANON = {
-  'mati':'mati','meninggal':'mati','kematian':'mati',
-  'lahir':'lahir','lahiran':'lahir',
-  'dipotong':'dipotong','dipotong ':'dipotong','dipotongnya':'dipotong',
-  'hilang':'hilang','kehilangan':'hilang'
-};
-
-function normalizeJenis(s){
-  if(!s) return 'lainnya';
-  const key = s.toString().trim().toLowerCase();
-  return CANON[key] || (['mati','lahir','dipotong','hilang'].includes(key) ? key : 'lainnya');
-}
-
-function normalizeRecord(r){
-  return {
-    id: r.id ?? r.ID ?? Date.now(),
-    nama_peternak: r.nama_peternak ?? r.nama ?? '',
-    id_peternak: r.id_peternak ?? r.id_peternak ?? r.owner_id ?? '',
-    tanggal_kejadian: (r.tanggal_kejadian ?? r.tanggal ?? r.date) ? (r.tanggal_kejadian ?? r.tanggal ?? r.date).slice(0,10) : null,
-    jenis_laporan_raw: r.jenis_laporan ?? r.jenis ?? '',
-    jenis_laporan: normalizeJenis(r.jenis_laporan ?? r.jenis ?? ''),
-    jumlah_ternak: Number(r.jumlah_ternak ?? r.jumlah ?? r.count ?? 1) || 0,
-    keterangan: r.keterangan ?? r.ket ?? '',
-    lokasi_kejadian: r.lokasi_kejadian ?? r.lokasi ?? ''
-  };
-}
-
-/* -----------------------------
-   Storage helpers: try API then localStorage
-   ----------------------------- */
-const LS_KEY = 'app_ternak_records_v1';
-
-async function fetchFromApi() {
-  if(API_TRIES.length === 0) throw new Error('No API configured');
-  let lastErr = null;
-  for(const url of API_TRIES){
-    try{
-      const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) throw new Error('status '+res.status);
-      const json = await res.json();
-      if(Array.isArray(json)) return json.map(normalizeRecord);
-      // if single object with {data:[]} pattern
-      if(json && Array.isArray(json.data)) return json.data.map(normalizeRecord);
-      // else cannot parse
-      throw new Error('Unexpected API response');
-    }catch(err){
-      lastErr = err;
-      continue;
-    }
-  }
-  throw lastErr || new Error('fetch failed');
-}
-
-function loadFromLocal(){
-  try{
-    const raw = localStorage.getItem(LS_KEY);
-    if(!raw) return null;
-    const parsed = JSON.parse(raw);
-    if(Array.isArray(parsed)) return parsed.map(normalizeRecord);
-    return null;
-  }catch(e){
-    console.warn('local load fail', e);
-    return null;
-  }
-}
-
-function saveToLocal(records){
-  try{
-    localStorage.setItem(LS_KEY, JSON.stringify(records));
-  }catch(e){
-    console.warn('local save fail', e);
-  }
-}
-
-/* -----------------------------
-   Global state
-   ----------------------------- */
-let latestRecords = []; // normalized records
-const groupsContainer = document.getElementById('groupsContainer');
-const subtitleEl = document.getElementById('subtitle');
-const dateInput = document.getElementById('dateFilter');
-const predef = document.getElementById('predef');
-const refreshBtn = document.getElementById('refreshBtn');
-const addBtn = document.getElementById('addBtn');
-const syncBtn = document.getElementById('syncBtn');
-
-/* -----------------------------
-   Chart setup
-   ----------------------------- */
-const ctx = document.getElementById('chartTernak').getContext('2d');
-let chart = new Chart(ctx, {
-  type:'bar',
-  data:{
-    labels:['mati','lahir','dipotong','hilang','lainnya'],
-    datasets:[{
-      label:'Jumlah Ternak',
-      data:[0,0,0,0,0],
-      backgroundColor:['#ef4444','#10b981','#f59e0b','#3b82f6','#9ca3af'],
-      borderColor:['#ef4444','#10b981','#f59e0b','#3b82f6','#9ca3af'],
-      borderWidth:1
-    }]
-  },
-  options:{
-    responsive:true,
-    plugins:{
-      legend:{display:false},
-      title:{display:true,text:'Jumlah Ternak per Jenis Laporan'}
-    },
-    scales:{
-      y:{beginAtZero:true}
-    }
-  }
-});
-
-/* -----------------------------
-   Utilities
-   ----------------------------- */
-function formatDateInfo(dateStr){
-  if(!dateStr) return '';
-  const d = new Date(dateStr + 'T00:00:00');
-  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
-  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function groupRecords(records){
-  const groups = { mati:[], lahir:[], dipotong:[], hilang:[], lainnya:[] };
-  for(const rec of records){
-    if(rec && rec.jenis_laporan && groups[rec.jenis_laporan]) groups[rec.jenis_laporan].push(rec);
-    else groups.lainnya.push(rec);
-  }
-  return groups;
-}
-
-function countsFromGroups(groups){
-  const out = {};
-  for(const k of Object.keys(groups)){
-    out[k] = groups[k].reduce((s,r)=>s + (Number(r.jumlah_ternak)||0),0);
-  }
-  return out;
-}
-
-/* -----------------------------
-   Render functions (groups, chart, table)
-   ----------------------------- */
-function updateChart(counts){
-  const labels = ['mati','lahir','dipotong','hilang','lainnya'];
-  chart.data.datasets[0].data = labels.map(l => counts[l] || 0);
-  chart.update();
-}
-
-function renderGroups(groups){
-  groupsContainer.innerHTML = '';
-  const order = ['mati','lahir','dipotong','hilang','lainnya'];
-  for(const key of order){
-    const recs = groups[key] || [];
-    const total = recs.reduce((s,r)=>s+(Number(r.jumlah_ternak)||0),0);
-    const head = document.createElement('div');
-    head.className='group';
-    head.innerHTML = `
-      <div class="group-header" data-group="${key}">
-        <div>
-          <div class="group-title">${key.toUpperCase()}</div>
-          <div class="group-sub">${recs.length} laporan · Jumlah: <strong>${total}</strong></div>
-        </div>
-        <div class="group-sub">▶</div>
-      </div>
-      <div class="group-body"></div>
-    `;
-    const body = head.querySelector('.group-body');
-    if(recs.length===0){
-      body.innerHTML = '<div class="empty">Tidak ada data</div>';
-    } else {
-      for(const r of recs){
-        const recEl = document.createElement('div');
-        recEl.className='record';
-        recEl.innerHTML = `
-          <div class="badge">${r.jumlah_ternak}</div>
-          <div class="meta">
-            <p><strong class="rec-name">${r.nama_peternak || '—'}</strong> · <span class="muted">${r.lokasi_kejadian || ''}</span></p>
-            <p class="muted">${r.tanggal_kejadian ? formatDateInfo(r.tanggal_kejadian) : ''}</p>
-            <div class="keterangan">${r.keterangan || '<span class="muted">-</span>'}</div>
-          </div>
-        `;
-        body.appendChild(recEl);
-      }
-    }
-    // toggle
-    const hdr = head.querySelector('.group-header');
-    hdr.addEventListener('click',()=>{
-      const open = body.style.display !== 'block';
-      body.style.display = open ? 'block' : 'none';
-      hdr.querySelector('.group-sub:last-child').textContent = open ? '▼' : '▶';
-    });
-    groupsContainer.appendChild(head);
-  }
-}
-
-function renderTable(records){
-  const tbody = document.querySelector("#peternakTable tbody");
-  tbody.innerHTML = "";
-  records.forEach((item, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${index+1}</td>
-      <td>${escapeHtml(item.nama_peternak)}</td>
-      <td>${escapeHtml(item.id_peternak)}</td>
-      <td>${escapeHtml(item.tanggal_kejadian || '')}</td>
-      <td>${escapeHtml(item.jenis_laporan_raw || item.jenis_laporan)}</td>
-      <td>${escapeHtml(String(item.jumlah_ternak))}</td>
-      <td>${escapeHtml(item.lokasi_kejadian)}</td>
-      <td>${escapeHtml(item.keterangan)}</td>
-      <td class="actions">
-        <button class="btn-ghost" data-action="preview" data-index="${index}">Preview</button>
-        <button class="btn-ghost" data-action="edit" data-index="${index}">Edit</button>
-        <button class="btn-danger" data-action="delete" data-index="${index}">Hapus</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  // action listeners
-  tbody.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      const idx = Number(btn.getAttribute('data-index'));
-      const action = btn.getAttribute('data-action');
-      if(action === 'preview') openModalPreview(idx);
-      if(action === 'edit') openModalEdit(idx);
-      if(action === 'delete') confirmDelete(idx);
-    });
-  });
-}
-
-/* -----------------------------
-   Modal logic (preview/edit/create)
-   ----------------------------- */
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const modalBody = document.getElementById('modalBody');
-const closeModal = document.getElementById('closeModal');
-const modalClose = document.getElementById('modalClose');
-const modalSave = document.getElementById('modalSave');
-const modalDelete = document.getElementById('modalDelete');
-
-let activeIndex = null; // index in latestRecords for edit/preview; null for create
-let currentMode = 'preview'; // 'preview' | 'edit' | 'create'
-
-function openModal(mode='preview'){
-  currentMode = mode;
-  modal.classList.add('open');
-  modal.setAttribute('aria-hidden','false');
-  // show/hide controls depending on mode
-  if(mode === 'preview'){
-    modalSave.style.display='none';
-    modalDelete.style.display='inline-block';
-  } else if(mode === 'edit'){
-    modalSave.style.display='inline-block';
-    modalDelete.style.display='inline-block';
-  } else if(mode === 'create'){
-    modalSave.style.display='inline-block';
-    modalDelete.style.display='none';
-  }
-}
-
-function closeModalFn(){
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden','true');
-  modalBody.innerHTML = '';
-  activeIndex = null;
-}
-
-closeModal.addEventListener('click', closeModalFn);
-modalClose.addEventListener('click', closeModalFn);
-window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModalFn(); });
-modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModalFn(); });
-
-closeModal.addEventListener('click', closeModalFn);
-modalClose.addEventListener('click', closeModalFn);
-
-// Open modal preview
-function openModalPreview(idx){
-  activeIndex = idx;
-  currentMode = 'preview';
-  const r = latestRecords[idx];
-  modalTitle.textContent = `Preview #${idx+1}`;
-  openModal('preview');
-  modalBody.innerHTML = `
-    <p><strong>Nama Peternak:</strong> ${escapeHtml(r.nama_peternak)}</p>
-    <p><strong>ID Peternak:</strong> ${escapeHtml(r.id_peternak)}</p>
-    <p><strong>Tanggal Kejadian:</strong> ${escapeHtml(r.tanggal_kejadian)}</p>
-    <p><strong>Jenis Laporan:</strong> ${escapeHtml(r.jenis_laporan_raw || r.jenis_laporan)}</p>
-    <p><strong>Jumlah Ternak:</strong> ${escapeHtml(String(r.jumlah_ternak))}</p>
-    <p><strong>Lokasi Kejadian:</strong> ${escapeHtml(r.lokasi_kejadian)}</p>
-    <p><strong>Keterangan:</strong> ${escapeHtml(r.keterangan)}</p>
-  `;
-}
-
-// Open modal edit
-function openModalEdit(idx){
-  activeIndex = idx;
-  currentMode = 'edit';
-  const r = latestRecords[idx];
-  modalTitle.textContent = `Edit #${idx+1}`;
-  openModal('edit');
-  modalBody.innerHTML = `
-    <label>Nama Peternak
-      <input type="text" id="inpNama" value="${escapeHtml(r.nama_peternak)}" />
-    </label>
-    <label>ID Peternak
-      <input type="number" id="inpIdPeternak" value="${escapeHtml(r.id_peternak)}" />
-    </label>
-    <label>Tanggal Kejadian
-      <input type="date" id="inpTanggal" value="${escapeHtml(r.tanggal_kejadian)}" />
-    </label>
-    <label>Jenis Laporan
-      <select id="inpJenis">
-        <option value="mati" ${r.jenis_laporan==='mati'?'selected':''}>Mati</option>
-        <option value="lahir" ${r.jenis_laporan==='lahir'?'selected':''}>Lahir</option>
-        <option value="dipotong" ${r.jenis_laporan==='dipotong'?'selected':''}>Dipotong</option>
-        <option value="hilang" ${r.jenis_laporan==='hilang'?'selected':''}>Hilang</option>
-        <option value="lainnya" ${r.jenis_laporan==='lainnya'?'selected':''}>Lainnya</option>
-      </select>
-    </label>
-    <label>Jumlah Ternak
-      <input type="number" id="inpJumlah" value="${escapeHtml(String(r.jumlah_ternak))}" min="0" />
-    </label>
-    <label>Lokasi Kejadian
-      <input type="text" id="inpLokasi" value="${escapeHtml(r.lokasi_kejadian)}" />
-    </label>
-    <label>Keterangan
-      <textarea id="inpKeterangan">${escapeHtml(r.keterangan)}</textarea>
-    </label>
-  `;
-}
-
-// Open modal create (add new)
-function openModalCreate(){
-  activeIndex = null;
-  currentMode = 'create';
-  modalTitle.textContent = 'Tambah Data Baru';
-  openModal('create');
-  modalBody.innerHTML = `
-    <label>Nama Peternak
-      <input type="text" id="inpNama" value="" />
-    </label>
-    <label>ID Peternak
-      <input type="number" id="inpIdPeternak" value="" />
-    </label>
-    <label>Tanggal Kejadian
-      <input type="date" id="inpTanggal" value="" />
-    </label>
-    <label>Jenis Laporan
-      <select id="inpJenis">
-        <option value="mati">Mati</option>
-        <option value="lahir">Lahir</option>
-        <option value="dipotong">Dipotong</option>
-        <option value="hilang">Hilang</option>
-        <option value="lainnya">Lainnya</option>
-      </select>
-    </label>
-    <label>Jumlah Ternak
-      <input type="number" id="inpJumlah" value="0" min="0" />
-    </label>
-    <label>Lokasi Kejadian
-      <input type="text" id="inpLokasi" value="" />
-    </label>
-    <label>Keterangan
-      <textarea id="inpKeterangan"></textarea>
-    </label>
-  `;
-}
-
-// Save modal (for edit and create)
-modalSave.addEventListener('click', () => {
-  const nama = document.getElementById('inpNama').value.trim();
-  const idPeternak = document.getElementById('inpIdPeternak').value.trim();
-  const tanggal = document.getElementById('inpTanggal').value;
-  const jenis = document.getElementById('inpJenis').value;
-  const jumlah = Number(document.getElementById('inpJumlah').value);
-  const lokasi = document.getElementById('inpLokasi').value.trim();
-  const ket = document.getElementById('inpKeterangan').value.trim();
-
-  if(!nama || !idPeternak || !tanggal || jumlah < 0){
-    alert('Mohon lengkapi data dengan benar.');
-    return;
-  }
-
-  const newRecord = {
-    id: currentMode === 'edit' ? latestRecords[activeIndex].id : Date.now(),
-    nama_peternak: nama,
-    id_peternak: idPeternak,
-    tanggal_kejadian: tanggal,
-    jenis_laporan_raw: jenis,
-    jenis_laporan: normalizeJenis(jenis),
-    jumlah_ternak: jumlah,
-    lokasi_kejadian: lokasi,
-    keterangan: ket
-  };
-
-  if(currentMode === 'edit'){
-    latestRecords[activeIndex] = newRecord;
-  } else {
-    latestRecords.push(newRecord);
-  }
-  saveToLocal(latestRecords);
-  refreshUI();
-  closeModalFn();
-});
-
-// Delete modal
-modalDelete.addEventListener('click', () => {
-  if(activeIndex !== null && confirm('Yakin ingin menghapus data ini?')){
-    latestRecords.splice(activeIndex, 1);
-    saveToLocal(latestRecords);
-    refreshUI();
-    closeModalFn();
-  }
-});
-
-// Confirm delete from table button
-function confirmDelete(idx){
-  if(confirm('Yakin ingin menghapus data ini?')){
-    latestRecords.splice(idx,1);
-    saveToLocal(latestRecords);
-    refreshUI();
-  }
-}
-
-/* Escape HTML for safety */
-function escapeHtml(text) {
-  return text
-    .toString()
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-/* Refresh UI */
-function refreshUI(){
-  const groups = groupRecords(latestRecords);
-  const counts = countsFromGroups(groups);
-  updateChart(counts);
-  renderGroups(groups);
-  renderTable(latestRecords);
-  subtitleEl.textContent = `Terakhir diperbarui: ${new Date().toLocaleString()}`;
-}
-
-/* Hook Add button */
-addBtn.addEventListener('click', () => openModalCreate());
-
-/* Initial data load */
-async function loadData(){
-  try {
-    let data = null;
-    try {
-      data = await fetchFromApi();
-    } catch(e){
-      console.warn('API gagal, pakai localStorage/sampel', e);
-      data = loadFromLocal() || SAMPLE.map(normalizeRecord);
-    }
-    latestRecords = data;
-    saveToLocal(latestRecords);
-    refreshUI();
-  } catch (err){
-    subtitleEl.textContent = 'Gagal memuat data.';
-    console.error(err);
-  }
-}
-
-refreshBtn.addEventListener('click', () => {
-  loadData();
-});
-
-loadData();
-
-// Auto refresh every 30s
-setInterval(loadData, 30000);
-
-function openModalPreview(index){
-  activeIndex = index;
-  const p = latestRecords[index];
-  modalTitle.textContent = 'Preview Data';
-  modalBody.innerHTML = `
-    <p><strong>Nama:</strong> ${escapeHtml(p.nama_peternak)}</p>
-    <p><strong>ID Peternak:</strong> ${escapeHtml(p.id_peternak)}</p>
-    <p><strong>Tanggal:</strong> ${escapeHtml(p.tanggal_kejadian || '')} <span class="muted">(${escapeHtml(formatDateInfo(p.tanggal_kejadian||''))})</span></p>
-    <p><strong>Jenis Laporan:</strong> ${escapeHtml(p.jenis_laporan_raw || p.jenis_laporan)}</p>
-    <p><strong>Jumlah:</strong> ${escapeHtml(String(p.jumlah_ternak))}</p>
-    <p><strong>Lokasi:</strong> ${escapeHtml(p.lokasi_kejadian)}</p>
-    <p><strong>Keterangan:</strong> ${escapeHtml(p.keterangan)}</p>
-  `;
-  openModal('preview');
-}
-
-function openModalEdit(index){
-  activeIndex = index;
-  const p = latestRecords[index];
-  modalTitle.textContent = 'Edit Data';
-  modalBody.innerHTML = renderFormHtml(p);
-  openModal('edit');
-  modalSave.onclick = handleSaveEdit;
-  modalDelete.onclick = ()=> confirmDelete(activeIndex);
-}
-
-function openModalCreate(){
-  activeIndex = null;
-  modalTitle.textContent = 'Tambah Data Baru';
-  modalBody.innerHTML = renderFormHtml(); // empty
-  openModal('create');
-  modalSave.onclick = handleCreate;
-  modalDelete.onclick = null;
-}
-
-function renderFormHtml(p = {}){
-  const today = new Date().toISOString().slice(0,10);
-  return `
-    <div class="row">
-      <div class="col">
-        <label>Nama Peternak</label>
-        <input id="f_nama" type="text" value="${escapeHtml(p.nama_peternak ?? '')}" />
-      </div>
-      <div class="col">
-        <label>ID Peternak</label>
-        <input id="f_idpet" type="text" value="${escapeHtml(p.id_peternak ?? '')}" />
-      </div>
+  <!-- MODAL TAMBAH TERNAK -->
+  <div id="modalTernak" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modalTernak')">&times;</span>
+      <h2 id="modalTitle">Tambah Ternak</h2>
+      <input id="nama_peternak" placeholder="Nama Peternak">
+      <input id="id_peternak" placeholder="ID Peternak">
+      <input id="tanggal_kejadian" type="date">
+      <input id="jenis_laporan" placeholder="Jenis Laporan">
+      <input id="jumlah_ternak" placeholder="Jumlah">
+      <input id="lokasi_kejadian" placeholder="Lokasi">
+      <input id="keterangan" placeholder="Keterangan">
+      <button id="formTernakBtn" onclick="addTernak()">Tambah</button>
     </div>
-    <div class="row">
-      <div class="col">
-        <label>Tanggal Kejadian</label>
-        <input id="f_tgl" type="date" value="${escapeHtml(p.tanggal_kejadian ?? today)}" />
-      </div>
-      <div class="col">
-        <label>Jenis Laporan</label>
-        <select id="f_jenis">
-          <option ${ (p.jenis_laporan === 'mati') ? 'selected' : '' }>mati</option>
-          <option ${ (p.jenis_laporan === 'lahir') ? 'selected' : '' }>lahir</option>
-          <option ${ (p.jenis_laporan === 'dipotong') ? 'selected' : '' }>dipotong</option>
-          <option ${ (p.jenis_laporan === 'hilang') ? 'selected' : '' }>hilang</option>
-          <option ${ (p.jenis_laporan === 'lainnya') ? 'selected' : '' }>lainnya</option>
+  </div>
+
+  <!-- MODAL TAMBAH CHECKLIST -->
+  <div id="modalChecklist" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('modalChecklist')">&times;</span>
+      <h2>Tambah Checklist</h2>
+      <input id="id_ternak" placeholder="ID Ternak">
+      <input id="nama_petugas" placeholder="Nama Petugas">
+      <input id="id_petugas" placeholder="ID Petugas">
+      <input id="id_laporan" placeholder="ID Laporan">
+      <input id="check_lokasi" placeholder="Check Lokasi (0/1)">
+      <input id="check_sesuai_jumlah" placeholder="Check Sesuai Jumlah (0/1)">
+      <input id="check_ada_foto" placeholder="Check Ada Foto (0/1)">
+      <input id="check_lengkap" placeholder="Check Lengkap (0/1)">
+      <input id="status" placeholder="Status">
+      <input id="catatan_petugas" placeholder="Catatan">
+      <button onclick="addChecklist()">Tambah</button>
+    </div>
+  </div>
+
+  <!-- MODAL EDIT CHECKLIST -->
+  <div id="editChecklistModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+       background:rgba(0,0,0,0.5); z-index:1000; overflow:auto;">
+    <div style="background:#fff; margin:5% auto; padding:20px; width:500px; border-radius:10px; position:relative;">
+      <h2>Edit Checklist</h2>
+      <form id="editChecklistForm" onsubmit="event.preventDefault(); updateChecklist();">
+        <input type="hidden" id="edit_fotoLama">
+
+        <label>ID Ternak</label>
+        <input type="text" id="edit_id_ternak" required>
+
+        <label>Nama Petugas</label>
+        <input type="text" id="edit_nama_petugas" required>
+
+        <label>ID Petugas</label>
+        <input type="text" id="edit_id_petugas" required>
+
+        <label>ID Laporan</label>
+        <input type="text" id="edit_id_laporan" required>
+
+        <label>Check Lokasi</label>
+        <input type="text" id="edit_check_lokasi">
+
+        <label>Check Sesuai Jumlah</label>
+        <input type="text" id="edit_check_sesuai_jumlah">
+
+        <label>Check Ada Foto</label>
+        <input type="text" id="edit_check_ada_foto">
+
+        <label>Check Lengkap</label>
+        <input type="text" id="edit_check_lengkap">
+
+        <label>Status</label>
+        <select id="edit_status">
+          <option value="Pending">Terverifikasi</option>
+          <option value="Selesai">Perlu Perbaikan</option>
         </select>
-      </div>
+
+        <label>Catatan Petugas</label>
+        <textarea id="edit_catatan_petugas"></textarea>
+
+        <label>Foto Baru (Opsional)</label>
+        <input type="file" id="edit_foto" accept="image/*">
+
+        <div style="margin-top:15px;">
+          <button type="submit">Simpan Perubahan</button>
+          <button type="button" onclick="closeEditModal()">Batal</button>
+        </div>
+      </form>
+
+      <!-- Tombol Close -->
+      <span onclick="closeEditModal()" style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px;">&times;</span>
     </div>
-    <label>Jumlah</label>
-    <input id="f_jumlah" type="number" min="0" value="${escapeHtml(String(p.jumlah_ternak ?? 1))}" />
-    <label>Lokasi</label>
-    <input id="f_lokasi" type="text" value="${escapeHtml(p.lokasi_kejadian ?? '')}" />
-    <label>Keterangan</label>
-    <textarea id="f_ket">${escapeHtml(p.keterangan ?? '')}</textarea>
-  `;
-}
+  </div>
 
-/* -----------------------------
-   CRUD handlers (local + optional API)
-   ----------------------------- */
-
-function handleCreate(){
-  const newRec = readFormValuesFromModal();
-  // assign new unique id
-  newRec.id = generateId();
-  latestRecords.push(newRec);
-  saveToLocal(latestRecords);
-  renderAll();
-  closeModalFn();
-  // try to push to API asynchronously (best-effort)
-  if(API_TRIES.length) apiCreate(newRec).catch(err=>console.warn('create api fail', err));
-}
-
-function handleSaveEdit(){
-  if(activeIndex === null) return;
-  const updated = readFormValuesFromModal();
-  updated.id = latestRecords[activeIndex].id; // keep id
-  latestRecords[activeIndex] = normalizeRecord(updated);
-  saveToLocal(latestRecords);
-  renderAll();
-  closeModalFn();
-  // try to update API
-  if(API_TRIES.length) apiUpdate(updated).catch(err=>console.warn('update api fail', err));
-}
-
-function confirmDelete(index){
-  const ok = confirm('Yakin ingin menghapus data ini?');
-  if(!ok) return;
-  const rec = latestRecords[index];
-  latestRecords.splice(index,1);
-  saveToLocal(latestRecords);
-  renderAll();
-  closeModalFn();
-  if(API_TRIES.length) apiDelete(rec).catch(err=>console.warn('delete api fail', err));
-}
-
-/* Form helpers */
-function readFormValuesFromModal(){
-  const nama = document.getElementById('f_nama').value.trim();
-  const idpet = document.getElementById('f_idpet').value.trim();
-  const tanggal = document.getElementById('f_tgl').value || new Date().toISOString().slice(0,10);
-  const jenis = document.getElementById('f_jenis').value;
-  const jumlah = Number(document.getElementById('f_jumlah').value) || 0;
-  const lokasi = document.getElementById('f_lokasi').value.trim();
-  const ket = document.getElementById('f_ket').value.trim();
-  return normalizeRecord({
-    nama_peternak: nama,
-    id_peternak: idpet,
-    tanggal_kejadian: tanggal,
-    jenis_laporan: jenis,
-    jumlah_ternak: jumlah,
-    lokasi_kejadian: lokasi,
-    keterangan: ket
-  });
-}
-
-
-
-/* -----------------------------
-   API wrapper (best-effort; expects REST-like endpoints)
-   - POST to create
-   - PUT to update (/{id})
-   - DELETE to delete (/{id})
-   - GET list to sync
-   ----------------------------- */
-async function apiCreate(record){
-  if(API_TRIES.length === 0) throw new Error('API not configured');
-  const url = API_TRIES[0];
-  const res = await fetch(url, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify(record)
-  });
-  if(!res.ok) throw new Error('create failed '+res.status);
-  return res.json();
-}
-
-async function apiUpdate(record){
-  if(API_TRIES.length === 0) throw new Error('API not configured');
-  const url = `${API_TRIES[0].replace(/\/$/, '')}/${record.id}`;
-  const res = await fetch(url, {
-    method:'PUT',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify(record)
-  });
-  if(!res.ok) throw new Error('update failed '+res.status);
-  return res.json();
-}
-
-async function apiDelete(record){
-  if(API_TRIES.length === 0) throw new Error('API not configured');
-  const url = `${API_TRIES[0].replace(/\/$/, '')}/${record.id}`;
-  const res = await fetch(url, { method:'DELETE' });
-  if(!res.ok) throw new Error('delete failed '+res.status);
-  return res.json();
-}
-
-/* -----------------------------
-   Helpers: ID, escape
-   ----------------------------- */
-function generateId(){
-  // ensures unique-ish id (timestamp + random)
-  return Date.now() + Math.floor(Math.random()*9999);
-}
-
-function escapeHtml(s){
-  if(s === null || s === undefined) return '';
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-/* -----------------------------
-   Main load & render pipeline
-   ----------------------------- */
-async function loadAndRender(){
-  subtitleEl.textContent = 'Memuat data...';
-  try{
-    // try API
-    let data = null;
-    if(API_TRIES.length){
-      try{
-        data = await fetchFromApi();
-      }catch(e){
-        console.warn('API fetch failed, fallback to local', e);
-      }
-    }
-    // If no API or API failed -> localStorage
-    if(!data){
-      const local = loadFromLocal();
-      data = local ?? SAMPLE.map(normalizeRecord);
-    }
-    latestRecords = data.map(normalizeRecord);
-
-    // determine selected date filter
-    const selPre = predef.value;
-    const inputDate = dateInput.value;
-    const todayStr = new Date().toISOString().slice(0,10);
-    let filterDate = 'all';
-    if(selPre === 'all') filterDate = 'all';
-    else { // 'today' or custom
-      filterDate = inputDate || todayStr;
-    }
-    const filtered = filterDate === 'all' ? latestRecords : latestRecords.filter(r=> (r.tanggal_kejadian||'').slice(0,10) === filterDate);
-
-    // update subtitle
-    if(filterDate === 'all') subtitleEl.textContent = `Menampilkan semua tanggal · Total laporan: ${latestRecords.length}`;
-    else subtitleEl.textContent = `${formatDateInfo(filterDate)} · Total laporan: ${filtered.length}`;
-
-    // groups + chart
-    const groups = groupRecords(filtered);
-    const counts = countsFromGroups(groups);
-    updateChart(counts);
-    renderGroups(groups);
-
-    // render table (show filtered or all? We'll show filtered so table matches chart (but can be changed))
-    renderTable(filtered);
-
-  }catch(err){
-    console.error('loadAndRender error', err);
-    subtitleEl.textContent = 'Gagal memuat data';
-    // fallback to what we have in latestRecords
-    const groups = groupRecords(latestRecords);
-    updateChart(countsFromGroups(groups));
-    renderGroups(groups);
-    renderTable(latestRecords);
-  }
-}
-
-async function addPeternak(newData) {
-  try {
-    const response = await fetch('/api/peternak', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newData)
-    });
-    if (!response.ok) throw new Error('Gagal menambahkan data');
-    const result = await response.json();
-    console.log('Data berhasil ditambah:', result);
-    fetchLatestData(); // refresh tabel dari backend
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function updatePeternak(id, updatedData) {
-  try {
-    const response = await fetch(`/api/peternak/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData)
-    });
-    if (!response.ok) throw new Error('Gagal mengupdate data');
-    fetchLatestData();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function deletePeternakFromServer(id) {
-  try {
-    const response = await fetch(`/api/peternak/${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Gagal menghapus data');
-    fetchLatestData();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-
-/* -----------------------------
-   UI bindings
-   ----------------------------- */
-refreshBtn.addEventListener('click', loadAndRender);
-addBtn.addEventListener('click', openModalCreate);
-syncBtn.addEventListener('click', async ()=>{
-  // Attempt to push local changes to API / fetch newest
-  if(API_TRIES.length === 0){ alert('Tidak ada API dikonfigurasi. Ubah API_BASE pada file.'); return; }
-  try{
-    // naive approach: fetch remote list and replace local. (Alternatively implement 2-way sync)
-    const remote = await fetchFromApi();
-    latestRecords = remote.map(normalizeRecord);
-    saveToLocal(latestRecords);
-    loadAndRender();
-    alert('Sinkron sukses: data terbaru diambil dari API.');
-  }catch(e){
-    alert('Sinkron gagal: ' + (e.message || e));
-  }
-});
-
-/* predef behavior */
-predef.addEventListener('change', ()=>{
-  if(predef.value === 'today') dateInput.value = new Date().toISOString().slice(0,10);
-  else dateInput.value = '';
-  loadAndRender();
-});
-dateInput.addEventListener('change', ()=>{
-  predef.value = 'today';
-  loadAndRender();
-});
-
-/* auto refresh every 30s */
-setInterval(loadAndRender, 30000);
-
-/* daily refresh: schedule next midnight reload */
-function scheduleDailyRefresh(){
-  const now = new Date();
-  const next = new Date(now);
-  next.setDate(now.getDate() + 1);
-  next.setHours(0,0,5,0); // 00:00:05 next day
-  const ms = next - now;
-  setTimeout(()=>{
-    loadAndRender();
-    scheduleDailyRefresh(); // reschedule
-  }, ms);
-}
-scheduleDailyRefresh();
-
-/* initial load */
-(function init(){
-  // set date input default to today
-  dateInput.value = new Date().toISOString().slice(0,10);
-  predef.value = 'today';
-  // if localStorage empty, seed sample
-  if(!loadFromLocal()){
-    saveToLocal(SAMPLE.map(normalizeRecord));
-  }
-  loadAndRender();
-})();
-
-/* -----------------------------
-   Utility: event delegation for modal save/delete
-   ----------------------------- */
-// modalSave and modalDelete handlers are set when opening edit/create. Ensure fallback binding cleared:
-modalSave.onclick = ()=>{};
-modalDelete.onclick = ()=>{};
-
-/* -----------------------------
-   End of script
-   ----------------------------- */
-</script>
-
+  <!-- MODAL DETAIL TERNAK -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Detail Data Ternak</h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+</div>
+  <script src="dashboard.js"></script>
 </body>
 </html>
