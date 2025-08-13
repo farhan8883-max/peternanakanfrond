@@ -13,6 +13,25 @@
   document.getElementById(id).style.display = 'block';
 }
 
+// ==================logout===========//
+
+// Pastikan script ini dijalankan setelah elemen button ada di DOM
+document.getElementById("logout").addEventListener("click", function () {
+  // Konfirmasi dulu kalau mau keluar
+  if (confirm("Yakin ingin logout?")) {
+    // Hapus token / data sesi (sesuaikan key-nya)
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Bisa juga bersihkan sessionStorage
+    sessionStorage.clear();
+
+    // Redirect ke halaman login
+    window.location.href = "index.html";
+  }
+});
+
+
 // Fungsi tutup modal
 function closeModal(id) {
   document.getElementById(id).style.display = 'none';
@@ -28,50 +47,101 @@ window.onclick = function(event) {
 }
 
    // =================== USER ===================
-    async function fetchUsers() {
-      const res = await fetch(`${API_URL}/user`);
-      const data = await res.json();
-      const tbody = document.querySelector("#userTable tbody");
-      tbody.innerHTML = "";
-      data.forEach(user => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.hp}</td>
-            <td>
-              <button onclick="editUser(${user.id})">Edit</button>
-              <button onclick="deleteUser(${user.id})">Delete</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
+    // Ambil element modal dan form
+const userModal = document.getElementById("modalUser");
+const userForm = document.getElementById("userForm");
+const userModalTitle = document.getElementById("userModalTitle");
+const userFormBtn = document.getElementById("userFormBtn");
 
-    async function addUser() {
-      const form = {
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
-        email: document.getElementById("email").value,
-        hp: document.getElementById("hp").value,
-        akses: document.getElementById("akses").value,
-      };
-      await fetch(`${API_URL}/user`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
-      });
-      fetchUsers();
-    }
+// Fetch users tetap sama
+async function fetchUsers() {
+  const res = await fetch(`${API_URL}/user`);
+  const data = await res.json();
+  const tbody = document.querySelector("#userTable tbody");
+  tbody.innerHTML = "";
+  data.forEach(user => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${user.username}</td>
+        <td>${user.email}</td>
+        <td>${user.hp}</td>
+        <td>
+          <button onclick='editUser(${JSON.stringify(user)})'>Edit</button>
+          <button onclick="deleteUser(${user.id})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
 
-    async function deleteUser(id) {
-      await fetch(`${API_URL}/user/${id}`, { method: "DELETE" });
-      fetchUsers();
-    }
+// Open modal tambah user
+function openUserModal() {
+  editingUserId = null;
+  userModalTitle.textContent = "Tambah User";
+  userFormBtn.textContent = "Tambah";
+  userForm.reset();
+  userModal.style.display = "block";
+}
 
-    function editUser(id) {
-      alert(`Edit user ID ${id}`);
-    }
+// Edit user -> isi modal
+function editUser(user) {
+  editingUserId = user.id;
+  userModalTitle.textContent = "Edit User";
+  userFormBtn.textContent = "Update";
+
+  // Isi form
+  document.getElementById("username").value = user.username;
+  document.getElementById("password").value = ""; // kosongkan password, opsional
+  document.getElementById("email").value = user.email;
+  document.getElementById("hp").value = user.hp;
+  document.getElementById("akses").value = user.akses || "";
+
+  userModal.style.display = "block";
+}
+
+// Submit form user (Tambah / Update)
+async function submitUserForm(event) {
+  event.preventDefault();
+
+  const form = {
+    username: document.getElementById("username").value,
+    password: document.getElementById("password").value,
+    email: document.getElementById("email").value,
+    hp: document.getElementById("hp").value,
+    akses: document.getElementById("akses").value,
+  };
+
+  if (editingUserId) {
+    // Update user
+    await fetch(`${API_URL}/user/${editingUserId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form)
+    });
+  } else {
+    // Tambah user
+    await fetch(`${API_URL}/user`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form)
+    });
+  }
+
+  userModal.style.display = "none";
+  fetchUsers();
+}
+
+// Delete tetap sama
+async function deleteUser(id) {
+  await fetch(`${API_URL}/user/${id}`, { method: "DELETE" });
+  fetchUsers();
+}
+
+// Tutup modal
+function closeUserModal() {
+  userModal.style.display = "none";
+  editingUserId = null;
+}
 
 // =================== TERNAK ===================
 function openModal(id) {
@@ -297,11 +367,117 @@ async function updateChecklist() {
 
 // =================== INIT ===================
 
+// ==============section================= //
+
 // Fungsi untuk menampilkan section tertentu
 function showSection(id) {
-  document.querySelectorAll("main section").forEach(sec => sec.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  // Ambil semua section
+  const sections = document.querySelectorAll("section");
+  
+  // Hapus class active dari semua section
+  sections.forEach(sec => sec.classList.remove("active"));
+  
+  // Aktifkan section yang dipilih jika ada
+  const activeSection = document.getElementById(id);
+  if(activeSection) {
+    activeSection.classList.add("active");
+  }
 }
+
+// =========== export ke exel ======
+
+function exportTableToExcel(tableID, filename = '') {
+  let downloadLink;
+  const dataType = 'application/vnd.ms-excel';
+  const tableSelect = document.getElementById(tableID);
+  const tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+  
+  filename = filename ? filename + '.xls' : 'data.xls';
+
+  // Buat link download
+  downloadLink = document.createElement("a");
+  document.body.appendChild(downloadLink);
+
+  if (navigator.msSaveOrOpenBlob) {
+    // Untuk IE
+    const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+    navigator.msSaveOrOpenBlob(blob, filename);
+  } else {
+    // Browser lain
+    downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+    downloadLink.download = filename;
+    downloadLink.click();
+  }
+}
+
+
+function exportTernak() {
+  const table = document.getElementById("ternakTable").cloneNode(true); // Clone biar tabel asli aman
+  
+  // Hapus kolom "Aksi" (asumsi kolom terakhir)
+  table.querySelectorAll("tr").forEach(row => {
+    if (row.cells.length > 0) {
+      row.deleteCell(row.cells.length - 1);
+    }
+  });
+
+  // Buat array data dari tabel
+  const rows = Array.from(table.querySelectorAll("tr")).map(row =>
+    Array.from(row.querySelectorAll("th, td")).map(cell => cell.innerText)
+  );
+
+  // Opsional: ubah urutan kolom kalau mau
+  // Misalnya urutan sesuai Excel kamu: Nama Peternak, ID Peternak, Tanggal, Jenis, Jumlah, Lokasi, Keterangan
+  const reorderedRows = rows.map(row => [
+    row[0], // Nama Peternak
+    row[1], // ID Peternak
+    row[2], // Tanggal Kejadian
+    row[3], // Jenis Laporan
+    row[4], // Jumlah Ternak
+    row[5], // Lokasi Kejadian
+    row[6]  // Keterangan
+  ]);
+
+  // Convert ke worksheet
+  const ws = XLSX.utils.aoa_to_sheet(reorderedRows);
+
+  // Buat workbook dan simpan
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "DataTernak");
+  XLSX.writeFile(wb, "DataTernak.xlsx");
+}
+
+
+// ======angka=======
+// ===== dashboard.js =====
+async function loadDashboard() {
+  const [usersRes, ternakRes, checklistRes] = await Promise.all([
+    fetch(`${API_URL}/user`),
+    fetch(`${API_URL}/ternak`),
+    fetch(`${API_URL}/checklist`)
+  ]);
+
+  const [users, ternak, checklist] = await Promise.all([
+    usersRes.json(),
+    ternakRes.json(),
+    checklistRes.json()
+  ]);
+
+  // Tampilkan ringkasan
+  document.getElementById("totalUsers").textContent = ` ${users.length}`;
+  document.getElementById("totalTernak").textContent = ` ${ternak.length}`;
+  document.getElementById("totalChecklist").textContent = ` ${checklist.length}`;
+
+}
+
+loadDashboard();
+
+
+
+
+// Set section awal yang aktif, misal User
+showSection('ternakSection');
+
 fetchUsers();
 fetchTernak();
 fetchChecklist();
