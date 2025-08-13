@@ -1,0 +1,785 @@
+
+    /* Reset dan basic */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body, html {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Jika navbar fixed kiri lebar 250px */
+.content {
+  margin-left: 250px; /* geser konten ke kanan agar tidak tertutup navbar */
+  padding: 2rem;      /* beri padding agar konten tidak mepet */
+  transition: margin-left 0.3s ease; /* transisi smooth jika ingin animasi */
+}
+
+/* Responsive: jika layar kecil, sidebar hilang dan content jadi full lebar */
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+/* Sidebar navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #2563eb;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  gap: 2rem;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  width: 100%;
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Menu */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* User info and buttons */
+#userInfo, #userAccess {
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background-color: rgba(255 255 255 / 0.2);
+}
+
+#logout {
+  padding: 0.6rem 1rem;
+  background-color: #ef4444;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#logout:hover {
+  background-color: #b91c1c;
+}
+
+.button-daftar {
+  display: inline-block;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+.button-daftar:hover {
+  background-color: #047857;
+}
+
+/* Content main margin */
+body > .main-content {
+  margin-left: 250px;
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+/* Burger menu - hidden desktop */
+.burger {
+  display: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  width: 80px;
+  margin-left: 1rem;
+}
+
+.burger div {
+  height: 3px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  /* Sidebar disembunyikan */
+  .navbar {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;  /* <-- ini penting untuk jarak maksimal */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transform: translateX(0);
+  }
+
+  /* Logo tetap di kiri */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    width: auto;
+  }
+
+   /* Burger muncul dan berada di kanan ujung */
+  .burger {
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    width: 25px;
+    margin: 0; /* hapus margin kiri */
+  }
+
+  /* Menu disembunyikan default */
+  .menu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    background-color: #2563eb;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    transition: max-height 0.3s ease;
+    z-index: 999;
+  }
+
+  /* Menu aktif saat burger toggle */
+  .menu.active {
+    max-height: 300px; /* sesuaikan sesuai konten */
+  }
+
+  /* User info dan tombol di menu */
+  #userInfo, #userAccess, #logout, .button-daftar {
+    width: 100%;
+  }
+
+  /* Konten utama full width */
+  body > .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+}
+
+    .menu span {
+      opacity: 0.9;
+      display: inline-block;
+    }
+    .menu button {
+      background: #e74c3c;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+    .menu button:hover {
+      background: #ff1900;
+    }
+    .menu a.button-daftar {
+      background: #3498db;
+      padding: 8px 14px;
+      border-radius: 4px;
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+    .menu a.button-daftar:hover {
+      background: #2980b9;
+    }
+
+    /* ===== BURGER ===== */
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .burger div {
+      width: 26px;
+      height: 3px;
+      background: white;
+      border-radius: 3px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* BURGER ANIMATION */
+    .burger.active .line1 {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .burger.active .line2 {
+      opacity: 0;
+    }
+    .burger.active .line3 {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* RESPONSIVE MENU */
+    @media (max-width: 768px) {
+      .burger {
+        display: flex;
+      }
+      .menu {
+        position: absolute;
+        top: 65px;
+        right: 0;
+        background: #0056b3;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+        gap: 12px;
+        width: 220px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+      }
+      .menu.active {
+        max-height: 400px;
+        opacity: 1;
+      }
+      .menu button,
+      .menu a.button-daftar {
+        width: 100%;
+      }
+    }
+    /* pisah========= */
+
+    /* ===== MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      padding-top: 60px;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover { color: #000; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    /* Section card */
+section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Input dan tombol */
+input {
+  padding: 8px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 160px;
+}
+
+button {
+  padding: 8px 15px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 6px;
+  background: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+/* Container untuk UL agar bisa scroll */
+.scrollable-list {
+  max-height: 300px;       /* batas tinggi */
+  overflow: auto;          /* scroll vertikal & horizontal */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  padding: 0;
+}
+
+/* Style UL */
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap; /* biar tidak pecah ke bawah */
+}
+
+ul li:nth-child(even) {
+  background: #f2f2f2;
+}
+
+ul li button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+ul li .edit-btn {
+  background: #f39c12;
+  color: white;
+}
+
+ul li .delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+ul li .edit-btn:hover {
+  background: #d68910;
+}
+
+ul li .delete-btn:hover {
+  background: #c0392b;
+}
+
+/* Container agar tabel bisa scroll */
+#checklistTableContainer {
+  max-height: 300px; /* tinggi area scroll */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Gaya umum tabel */
+#checklistTable {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px; /* agar horizontal scroll jika kolom banyak */
+  background: #fff;
+}
+
+/* Header tabel */
+#checklistTable thead th {
+  background: #2980b9;
+  color: white;
+  position: sticky;
+  top: 0; /* sticky di atas */
+  z-index: 2;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Sel tabel */
+#checklistTable td, 
+#checklistTable th {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Efek hover baris */
+#checklistTable tbody tr:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Tombol aksi */
+#checklistTable button {
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+#checklistTable .edit-btn {
+  background: #2196F3;
+  color: white;
+}
+
+#checklistTable .delete-btn {
+  background: #f44336;
+  color: white;
+}
+
+/* Container agar tabel bisa scroll */
+#userTableContainer {
+  max-height: 300px; /* tinggi area scroll */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Gaya umum tabel */
+#userTable {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px; /* agar horizontal scroll jika kolom banyak */
+  background: #fff;
+}
+
+/* Header tabel */
+#userTable thead th {
+  background: #2196F3;
+  color: white;
+  position: sticky;
+  top: 0; /* sticky di atas */
+  z-index: 2;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Sel tabel */
+#userTable td, 
+#userTable th {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Efek hover baris */
+#userTable tbody tr:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Tombol aksi */
+#userTable button {
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+#userTable .edit-btn {
+  background: #2196F3;
+  color: white;
+}
+
+#userTable .delete-btn {
+  background: #f44336;
+  color: white;
+}
+
+/* Container agar tabel bisa scroll */
+#ternakTableContainer {
+  max-height: 300px; /* tinggi area scroll */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Gaya umum tabel */
+#ternakTable {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px; /* agar horizontal scroll jika kolom banyak */
+  background: #fff;
+}
+
+/* Header tabel */
+#ternakTable thead th {
+  background: #2980b9;
+  color: white;
+  position: sticky;
+  top: 0; /* sticky di atas */
+  z-index: 2;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Sel tabel */
+#ternakTable td, 
+#ternakTable th {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Efek hover baris */
+#ternakTable tbody tr:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Tombol aksi */
+#ternakTable button {
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+#ternakTable .edit-btn {
+  background: #2196F3;
+  color: white;
+}
+
+#ternakTable .delete-btn {
+  background: #f44336;
+  color: white;
+}
+
+/* Table container scrollable both directions */
+.table-container {
+  max-height: 300px;        /* batas tinggi untuk vertical scroll */
+  overflow-y: auto;         /* scroll vertikal */
+  overflow-x: auto;         /* scroll horizontal */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Biar tabel tidak hancur di layar kecil */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px;         /* supaya ada horizontal scroll bila kolom banyak */
+  background: #fff;
+}
+
+section {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  display: none; /* default: sembunyi, muncul saat tombol di klik */
+}
+
+section.active {
+  display: block;
+}
+
+
+
+
+/* Grid container */
+.grid.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* default: 4 kolom */
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Card style */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.5rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Icon style */
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+  color: #374151; /* default */
+}
+
+/* Label style */
+.label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Value style */
+.value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 0.3rem;
+}
+
+/* Responsif tablet & hp */
+@media (max-width: 768px) {
+  .grid.stats {
+    grid-template-columns: repeat(2, 1fr); /* 2 kolom */
+  }
+}
+
+/* Responsif hp kecil */
+@media (max-width: 480px) {
+  .grid.stats {
+    grid-template-columns: repeat(2, 1fr); /* 1 kolom */
+  }
+}
+
+.button-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  background-color: rgba(37, 99, 235, 0.15); /* biru transparan sekitar 15% opacity */
+  padding: 12px 20px;
+  border-radius: 8px;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3); /* shadow biru transparan */
+}
+
+/* Style tombol */
+.button-container button {
+  flex: 1;
+  padding: 10px 15px;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.button-container button:hover {
+  background-color: #1e40af;
+}
+
+
+
+.breadcrumbss{
+    display: flex;
+    align-items: center;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #ddd;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+.topbar .breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.topbar .breadcrumbs i {
+  font-size: 20px;
+}
+
+.topbar .admin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #555;
+}
+
+.topbar .admin .avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: default;
+
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 20px 15px;
+    font-size: 14px;
+  }
+
+  .topbar .breadcrumbs i {
+    font-size: 18px;
+    height: 30px;
+  }
+
+  .topbar .admin {
+    align-self: flex-end;
+    gap: 6px;
+    font-weight: 500;
+  }
+
+  .topbar .admin .avatar {
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+  }
+}
