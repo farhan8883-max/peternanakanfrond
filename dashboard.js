@@ -163,36 +163,63 @@ function loadTernakToForm(ternak) {
 
   editingId = ternak.id;
 
+  // Ubah tampilan form menjadi mode edit
   document.querySelector("#formTernakBtn").textContent = "Update";
   document.getElementById("modalTitle").textContent = "Edit Ternak";
 
   openModal("modalTernak");
 }
 
+// =================== FETCH & TAMPILKAN DATA ===================
 async function fetchTernak() {
   const res = await fetch(`${API_URL}/ternak`);
   const data = await res.json();
+
+  // Tampilan di tabel
   const tbody = document.querySelector("#ternakTable tbody");
   tbody.innerHTML = "";
   data.forEach(t => {
     tbody.innerHTML += `
       <tr>
         <td>${t.nama_peternak || "-"}</td>
-        <td>${t.id_peternak || 0}</td>
-        <td>${t.tanggal_kejadian}</td>
-        <td>${t.jenis_laporan}</td>
+        <td>${t.id_peternak || "-"}</td>
+        <td>${t.tanggal_kejadian || "-"}</td>
+        <td>${t.jenis_laporan || "-"}</td>
         <td>${t.jumlah_ternak || 0}</td>
-        <td>${t.lokasi_kejadian}</td>
-        <td>${t.keterangan}</td>
+        <td>${t.lokasi_kejadian || "-"}</td>
+        <td>${t.keterangan || "-"}</td>
         <td>
           <button onclick='loadTernakToForm(${JSON.stringify(t)})'>Edit</button>
-          <button onclick="deleteTernak(${t.id})">Delete</button>
+          <button onclick="deleteTernak(${t.id})">Hapus</button>
         </td>
       </tr>
     `;
   });
+
+  // Tampilan di list sederhana (opsional, seperti versi awal)
+  const list = document.getElementById("ternakList");
+  if (list) {
+    list.innerHTML = "";
+    data.forEach(t => {
+      const li = document.createElement("li");
+      li.textContent = `${t.nama_peternak} - ${t.jumlah_ternak} ekor`;
+
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.onclick = () => loadTernakToForm(t);
+      li.appendChild(editBtn);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Hapus";
+      delBtn.onclick = () => deleteTernak(t.id);
+      li.appendChild(delBtn);
+
+      list.appendChild(li);
+    });
+  }
 }
 
+// =================== SIMPAN DATA ===================
 async function addTernak() {
   const form = {
     nama_peternak: document.getElementById("nama_peternak").value,
@@ -222,16 +249,18 @@ async function addTernak() {
   }
 
   // Bersihkan form
-  document.querySelectorAll("#nama_peternak, #id_peternak, #tanggal_kejadian, #jenis_laporan, #jumlah_ternak, #lokasi_kejadian, #keterangan").forEach(input => input.value = "");
+  document.querySelectorAll("#nama_peternak, #id_peternak, #tanggal_kejadian, #jenis_laporan, #jumlah_ternak, #lokasi_kejadian, #keterangan")
+    .forEach(input => input.value = "");
 
   closeModal("modalTernak");
   fetchTernak();
 }
 
-    async function deleteTernak(id) {
-      await fetch(`${API_URL}/ternak/${id}`, { method: "DELETE" });
-      fetchTernak();
-    }
+// =================== HAPUS DATA ===================
+async function deleteTernak(id) {
+  await fetch(`${API_URL}/ternak/${id}`, { method: "DELETE" });
+  fetchTernak();
+}
 
     function editTernak(id) {
       alert(`Edit ternak ID ${id}`);
@@ -472,8 +501,53 @@ async function loadDashboard() {
 
 loadDashboard();
 
+// ====================================================================================
+    window.onload = function () {
+	
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+		text: "Data ternak"
+	},
+	axisY:{
+		title: "Data pertahun"
+	},
+	toolTip: {
+		shared: true
+	},
+	data: [{
+		type: "column",
+		name: "Avg. Lifespan",
+		toolTipContent: "{label} <br> <b>{name}:</b> {y} years",
+		dataPoints: [
+			{ y:  36, label: "totalUsers" },
+			{ y: 16, label: "Refrigerator" },
+			{ y: 12, label: "Water Heater" },
+			{ y: 35, label: "Boilers" },
+			{ y: 11, label: "Television" },
+			{ y: 18, label: "AC" },
+			{ y: 9, label: "Dishwasher" }
+		]
+	},
+	{
+		type: "error",
+		name: "Variability ",
+		toolTipContent: "<b>{name}:</b> {y[0]} - {y[1]} years",
+		dataPoints: [
+			{ y: [13, 16], label:"Washing Machine" },
+			{ y: [14, 17], label:"Refrigerator" },
+			{ y: [9, 13], label:"Water Heater" },
+			{ y: [30, 36], label:"Boilers" },
+			{ y: [9, 12], label:"Television" },
+			{ y: [15, 20], label:"AC" },
+			{ y: [8, 10], label:"Dishwasher" }
+			
+		]
+	}]
+});
+chart.render();
 
-
+}
 
 // Set section awal yang aktif, misal User
 showSection('ternakSection');
